@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Parix.ai SEO & AI Visibility Toolkit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF0F3; --surface:#FFFFFF; --ink:#18202B; --muted:#5A6575; --line:#D5DBE2;
+  --accent:#0B6E78; --accent-ink:#FFFFFF; --mark:#F2C94C; --good:#2E7D4F; --warn:#A8701A; --bad:#B4432A;
+  --soft:#E3F0F1;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11161D; --surface:#19212B; --ink:#E6EBF1; --muted:#9AA6B5; --line:#2C3743;
+    --accent:#4FB8C2; --accent-ink:#0B1A1D; --mark:#E0B840; --good:#6CC08F; --warn:#E0A64A; --bad:#E5775A; --soft:#16303A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11161D; --surface:#19212B; --ink:#E6EBF1; --muted:#9AA6B5; --line:#2C3743;
+  --accent:#4FB8C2; --accent-ink:#0B1A1D; --mark:#E0B840; --good:#6CC08F; --warn:#E0A64A; --bad:#E5775A; --soft:#16303A;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",system-ui,sans-serif;line-height:1.15;margin:0}
+.wrap{max-width:900px;margin:0 auto;padding:28px 20px 64px}
+header.top{display:grid;gap:10px;margin-bottom:18px}
+header.top h1{font-size:clamp(1.8rem,4.5vw,2.5rem);font-weight:700;letter-spacing:-.01em}
+header.top p{margin:0;color:var(--muted);max-width:64ch}
+nav.tabs{display:flex;gap:6px;border-bottom:2px solid var(--line);margin:8px 0 22px;overflow-x:auto}
+nav.tabs button{appearance:none;border:0;background:none;color:var(--muted);font:600 1rem "Public Sans",sans-serif;padding:10px 14px;margin-bottom:-2px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-color:var(--accent)}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
+.stack{display:grid;gap:18px}
+.field{display:grid;gap:6px;margin-bottom:14px}
+.field label{font-weight:600;font-size:.95rem}
+.hint{color:var(--muted);font-size:.85rem}
+input[type=text],input[type=password],textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:240px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+@media (max-width:680px){.row2,.row3{grid-template-columns:1fr}}
+.btn{appearance:none;border:0;border-radius:10px;padding:11px 18px;font:600 1rem "Public Sans",sans-serif;cursor:pointer;background:var(--accent);color:var(--accent-ink)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);padding:6px 12px;font-size:.85rem}
+.btn.line{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.msg{color:var(--muted);font-size:.95rem}
+.msg.err{color:var(--bad)}
+.note{background:var(--soft);border-radius:10px;padding:10px 12px;font-size:.92rem;margin:0 0 12px}
+.hidden{display:none!important}
+
+/* engine box */
+.engine{border-left:4px solid var(--mark)}
+.engine h2{font-size:1.15rem;margin-bottom:6px}
+.engine p{margin:0 0 10px}
+
+/* results */
+#result{margin-top:22px}
+.scores{display:grid;grid-template-columns:1.3fr repeat(4,1fr);gap:12px;align-items:stretch}
+@media (max-width:680px){.scores{grid-template-columns:1fr 1fr}}
+.tile{border:1px solid var(--line);border-radius:12px;padding:12px}
+.tile .n{font-family:"Bricolage Grotesque",sans-serif;font-size:2rem;font-weight:700;line-height:1}
+.tile .l{color:var(--muted);font-size:.85rem;margin-top:4px}
+.tile.main{background:var(--soft);border-color:transparent}
+.tile.main .n{font-size:3rem}
+.res h3{font-size:1.15rem;margin-bottom:10px}
+.res ul{margin:0;padding-left:20px}
+.res li{margin-bottom:6px}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+.tbl{overflow-x:auto}
+th,td{text-align:left;padding:8px 10px;border-top:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;border-top:0}
+.pill{display:inline-block;font-size:.78rem;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+.pass{color:var(--good)} .warn{color:var(--warn)} .fail{color:var(--bad)}
+.fix{border-top:1px solid var(--line);padding:12px 0}
+.fix h4{margin:0 0 4px;font-size:1rem;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fix p{margin:0 0 6px}
+.fix .ex{color:var(--muted);font-size:.92rem;border-left:3px solid var(--line);padding-left:10px}
+.qa{border-top:1px solid var(--line);padding:12px 0}
+.qa h4{margin:0 0 4px;font-size:1rem}
+.qa p{margin:0 0 8px}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;font-size:.82rem;white-space:pre}
+.draft{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px;white-space:pre-wrap;font-size:.95rem;max-height:520px;overflow:auto}
+.chatlog{display:grid;gap:10px;margin-bottom:12px}
+.bubble{padding:10px 12px;border-radius:12px;white-space:pre-wrap;max-width:92%}
+.bubble.me{background:var(--soft);justify-self:end}
+.bubble.ai{background:var(--bg);border:1px solid var(--line)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+
+/* checklist */
+.meter{display:flex;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px}
+.meter .num{font-family:"Bricolage Grotesque",sans-serif;font-size:2rem;font-weight:700;min-width:4.2ch}
+.bar{flex:1;height:10px;background:var(--bg);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .35s ease}
+.group{margin:22px 0 28px}
+.group h2{font-size:1.3rem;margin-bottom:4px}
+.group > p{margin:0 0 12px;color:var(--muted);font-size:.95rem}
+.item{display:grid;grid-template-columns:28px 1fr;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.item input{width:22px;height:22px;margin-top:2px;accent-color:var(--accent);cursor:pointer}
+.item label{font-weight:600;cursor:pointer}
+.item.done label{color:var(--muted);text-decoration:line-through}
+.item .why{color:var(--muted);font-size:.93rem;margin:4px 0 0}
+.item .ur{font-size:.9rem;margin:4px 0 0;padding-left:10px;border-left:3px solid var(--mark)}
+.steps{list-style:none;margin:16px 0 0;padding:0;display:grid;gap:8px}
+.steps li{display:flex;gap:10px;align-items:center;color:var(--muted)}
+.steps li::before{content:"";width:12px;height:12px;border-radius:50%;border:2px solid var(--line);flex:none}
+.steps li.active{color:var(--ink);font-weight:600}
+.steps li.active::before{border-color:var(--accent);background:var(--soft)}
+.steps li.ok{color:var(--ink)}
+.steps li.ok::before{border-color:var(--good);background:var(--good)}
+.preview{border:1px solid var(--line);border-radius:10px;padding:6px 20px;max-height:640px;overflow:auto;background:var(--bg)}
+.preview h1{font-size:1.7rem;margin:18px 0 10px}
+.preview h2{font-size:1.3rem;margin:22px 0 8px}
+.preview h3{font-size:1.08rem;margin:16px 0 6px}
+.preview p,.preview li{max-width:72ch}
+.preview table{margin:10px 0}
+.preview blockquote{margin:12px 0;padding:8px 14px;border-left:4px solid var(--accent);background:var(--soft);border-radius:0 8px 8px 0}
+.preview code{background:var(--surface);padding:1px 5px;border-radius:4px}
+.ph{background:var(--mark);color:#1d1d1d;padding:0 4px;border-radius:4px}
+.titles li{margin-bottom:8px}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Parix.ai SEO &amp; AI visibility toolkit</h1>
+    <p>Write blog posts built for Google, AI Overviews, ChatGPT, Perplexity and local search, then let the SEO specialist check and improve them before you publish.</p>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-write" aria-selected="true" aria-controls="view-write">Write a blog</button>
+    <button role="tab" id="tab-seo" aria-selected="false" aria-controls="view-seo">SEO specialist</button>
+    <button role="tab" id="tab-check" aria-selected="false" aria-controls="view-check">Setup checklist</button>
+  </nav>
+
+  <!-- ============ WRITE A BLOG ============ -->
+  <section id="view-write" role="tabpanel" aria-labelledby="tab-write" class="stack">
+    <div class="panel engine hidden" id="engineBox2">
+      <h2>Connect an AI to write</h2>
+      <p class="hint">Add a free Gemini API key in the <strong>SEO specialist</strong> tab first, then come back here.</p>
+    </div>
+    <div class="panel">
+      <div class="field">
+        <label for="wTopic">Blog topic</label>
+        <input type="text" id="wTopic" placeholder="How small businesses can automate customer support with AI">
+      </div>
+      <div class="row3">
+        <div class="field"><label for="wKw">Main keyword</label><input type="text" id="wKw" placeholder="ai customer support automation"></div>
+        <div class="field"><label for="wLoc">Target location</label><input type="text" id="wLoc" placeholder="Karachi, Pakistan or USA"><span class="hint">For local SEO. Leave empty for global.</span></div>
+        <div class="field"><label for="wAud">Who is it for?</label><input type="text" id="wAud" placeholder="small business owners"></div>
+      </div>
+      <div class="row3">
+        <div class="field"><label for="wLen">Length</label>
+          <select id="wLen"><option value="1200">Short (~1,200 words)</option><option value="1800" selected>Standard (~1,800 words)</option><option value="2500">Long guide (~2,500 words)</option></select></div>
+        <div class="field"><label for="wTone">Tone</label>
+          <select id="wTone"><option>Friendly expert</option><option>Professional</option><option>Simple and conversational</option></select></div>
+        <div class="field"><label for="wLang">Language</label>
+          <select id="wLang"><option>English</option><option>Urdu</option><option>Roman Urdu</option></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label for="wAuthor">Author name and role</label><input type="text" id="wAuthor" placeholder="Ali Khan, Founder of Parix.ai"></div>
+        <div class="field"><label for="wCta">Call to action</label><input type="text" id="wCta" placeholder="Book a free automation consultation"></div>
+      </div>
+      <div class="field">
+        <label for="wFacts">Your real experience and facts</label>
+        <span class="hint">This is what makes the blog rank and get cited. Add real client results, numbers, tools you use, prices, timelines, mistakes you've seen. Short notes are fine.</span>
+        <textarea id="wFacts" style="min-height:130px" placeholder="- Built a WhatsApp AI support bot for a Karachi clothing store, reply time went from 4 hours to 2 minutes&#10;- We use n8n, OpenAI and Claude&#10;- Typical project: 2-4 weeks, starting at $1,500"></textarea>
+      </div>
+      <div class="field">
+        <label for="wLinks">Your pages to link to (optional)</label>
+        <textarea id="wLinks" style="min-height:80px" placeholder="parix.ai/ai-workflow-automation - AI workflow automation service&#10;parix.ai/contact - Contact page"></textarea>
+      </div>
+      <label class="actions" style="margin-bottom:14px;font-size:.95rem"><input type="checkbox" id="wAuto" checked style="width:18px;height:18px;accent-color:var(--accent)"> Let the SEO specialist check and improve it automatically</label>
+      <div class="actions">
+        <button class="btn" id="wRun">Write my blog</button>
+        <button class="btn ghost hidden" id="wStop">Stop</button>
+        <span class="msg" id="wMsg"></span>
+      </div>
+      <ol class="steps hidden" id="wSteps">
+        <li data-s="brief">Researching search intent, questions and keywords</li>
+        <li data-s="write">Writing the article</li>
+        <li data-s="audit">SEO specialist is checking it</li>
+        <li data-s="fix">Applying the fixes</li>
+        <li data-s="final">Final check</li>
+      </ol>
+    </div>
+    <div id="wOut" class="stack hidden"></div>
+  </section>
+
+  <!-- ============ SEO SPECIALIST ============ -->
+  <section id="view-seo" role="tabpanel" aria-labelledby="tab-seo" class="stack hidden">
+
+    <div class="panel engine hidden" id="engineBox">
+      <h2>Connect an AI to run the tool</h2>
+      <p class="hint">You opened this file outside Claude, so it needs an API key. Google Gemini has a free tier: no card needed.</p>
+      <div class="row2">
+        <div class="field">
+          <label for="provider">AI provider</label>
+          <select id="provider">
+            <option value="gemini">Google Gemini (free tier)</option>
+            <option value="claude">Anthropic Claude (paid API)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="apikey" id="keyLabel">Gemini API key</label>
+          <input type="password" id="apikey" placeholder="Paste your key" autocomplete="off">
+          <span class="hint" id="keyHelp">Free key: aistudio.google.com → Get API key → Create API key.</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" id="saveKey">Save key</button>
+        <button class="btn line" id="forgetKey">Forget key</button>
+        <span class="msg" id="keyMsg"></span>
+      </div>
+      <div class="field" id="modelField" style="margin-top:14px">
+        <label for="model">Model</label>
+        <select id="model"></select>
+        <span class="hint" id="modelHelp"></span>
+      </div>
+      <p class="hint" style="margin-top:4px">The key is stored only in this browser. Never upload this file to your website after saving a key.</p>
+    </div>
+
+    <div class="panel">
+      <div class="row3">
+        <div class="field">
+          <label for="ptype">Page type</label>
+          <select id="ptype">
+            <option>Service page</option>
+            <option>Blog article</option>
+            <option>Case study</option>
+            <option>Landing page</option>
+            <option>About page</option>
+            <option>Home page</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="kw">Main keyword</label>
+          <input type="text" id="kw" placeholder="ai workflow automation">
+        </div>
+        <div class="field">
+          <label for="aud">Target market</label>
+          <input type="text" id="aud" placeholder="USA small businesses">
+        </div>
+      </div>
+      <div class="field">
+        <label for="purl">Page URL or title (optional)</label>
+        <input type="text" id="purl" placeholder="parix.ai/ai-workflow-automation">
+      </div>
+      <div class="field">
+        <label for="ptext">Content</label>
+        <span class="hint">Paste plain text, Markdown or HTML. Mark headings with ## (or keep the HTML) so heading checks are accurate.</span>
+        <textarea id="ptext" placeholder="Paste your page or new draft here…"></textarea>
+      </div>
+      <div class="actions">
+        <button class="btn" id="run">Check my content</button>
+        <button class="btn ghost hidden" id="stop">Stop</button>
+        <span class="msg" id="runMsg"></span>
+      </div>
+    </div>
+
+    <div id="result" class="stack hidden"></div>
+  </section>
+
+  <!-- ============ CHECKLIST ============ -->
+  <section id="view-check" role="tabpanel" aria-labelledby="tab-check" class="hidden">
+    <div class="meter" aria-live="polite">
+      <span class="num" id="pct">0%</span>
+      <div class="bar" aria-hidden="true"><i id="barfill"></i></div>
+      <small id="count" class="hint">0 of 0 done</small>
+    </div>
+    <p class="hint" id="saveStatus">Progress is saved in this browser.</p>
+    <div id="groups"></div>
+  </section>
+</div>
+
+<script>
+/* ---------------- AI engine: Claude viewer or API key ---------------- */
+let sample = null;
+const LS = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+  del(k){ try { localStorage.removeItem(k); } catch(e){} }
+};
+const engineBox = document.getElementById("engineBox");
+const provSel = document.getElementById("provider"), keyInput = document.getElementById("apikey"), modelSel = document.getElementById("model"), keyMsg = document.getElementById("keyMsg");
+const CLAUDE_MODELS = [["claude-sonnet-5-5","Claude Sonnet 5.5 (recommended)"],["claude-opus-5-5","Claude Opus 5.5 (best, costs more)"],["claude-haiku-4-5-20251001","Claude Haiku 4.5 (cheapest)"]];
+const prov = () => LS.get("parix-provider", "gemini");
+const keyName = () => prov() === "gemini" ? "parix-gkey" : "parix-key";
+const hasKey = () => !!LS.get(keyName(), "");
+function fillModels(list, chosen){
+  modelSel.innerHTML = "";
+  list.forEach(([v, l]) => { const o = document.createElement("option"); o.value = v; o.textContent = l; modelSel.append(o); });
+  if (chosen && list.some(x => x[0] === chosen)) modelSel.value = chosen;
+  LS.set("parix-model-" + prov(), modelSel.value);
+}
+async function loadGeminiModels(){
+  const key = LS.get("parix-gkey", ""); const help = document.getElementById("modelHelp");
+  if (!key) { fillModels([], null); help.textContent = "Save a key to load the free models."; return; }
+  help.textContent = "Loading models…";
+  try {
+    const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", { headers: { "x-goog-api-key": key } });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d?.error?.message || "Key rejected");
+    let ms = (d.models || []).filter(m => (m.supportedGenerationMethods || []).includes("generateContent"))
+      .map(m => m.name.replace(/^models\//, ""))
+      .filter(n => /^gemini-/.test(n) && !/(tts|image|audio|live|embedding|robotics|computer|native)/i.test(n));
+    const ver = n => { const v = n.match(/gemini-(\d+(?:\.\d+)?)/); return v ? parseFloat(v[1]) : 0; };
+    const rank = n => (/flash-lite/.test(n) ? 1 : /flash/.test(n) ? 2 : /pro/.test(n) ? 0 : -1);
+    ms = ms.filter(n => rank(n) >= 0).sort((a, b) => ver(b) - ver(a) || rank(b) - rank(a) || a.length - b.length);
+    const label = n => n + (/flash-lite/.test(n) ? " — more free requests per day" : /flash/.test(n) ? " — better writing, fewer free requests" : " — usually not on the free tier");
+    const def = ms.find(n => /flash/.test(n) && !/lite|preview|exp/.test(n)) || ms[0];
+    fillModels(ms.map(n => [n, label(n)]), LS.get("parix-model-gemini", def));
+    help.textContent = "Tip: start with the newest Flash. If you hit the daily limit, switch to Flash-Lite.";
+  } catch(e) { fillModels([], null); help.textContent = "Couldn't load models: " + e.message; }
+}
+function syncProvider(){
+  const g = prov() === "gemini";
+  provSel.value = prov();
+  document.getElementById("keyLabel").textContent = g ? "Gemini API key" : "Anthropic API key";
+  document.getElementById("keyHelp").textContent = g ? "Free key: aistudio.google.com → Get API key → Create API key." : "console.anthropic.com → API Keys. Billed per use.";
+  keyInput.value = hasKey() ? "••••••••••••" : "";
+  keyMsg.textContent = hasKey() ? "Key saved." : "";
+  if (g) loadGeminiModels(); else { fillModels(CLAUDE_MODELS, LS.get("parix-model-claude", "claude-sonnet-5-5")); document.getElementById("modelHelp").textContent = ""; }
+  const box2 = document.getElementById("engineBox2"); if (box2 && !sample) box2.classList.toggle("hidden", hasKey());
+}
+provSel.onchange = () => { LS.set("parix-provider", provSel.value); syncProvider(); };
+modelSel.onchange = () => LS.set("parix-model-" + prov(), modelSel.value);
+document.getElementById("saveKey").onclick = () => {
+  const v = keyInput.value.trim();
+  if (v && !v.startsWith("•")) LS.set(keyName(), v);
+  if (!hasKey()) { keyMsg.textContent = "Paste a key first."; return; }
+  syncProvider();
+};
+document.getElementById("forgetKey").onclick = () => { LS.del(keyName()); syncProvider(); keyMsg.textContent = "Key removed."; };
+
+(async () => {
+  try { if (window.claude && window.claude.use) sample = await claude.use("sample"); } catch(e) {}
+  if (!sample) { engineBox.classList.remove("hidden"); syncProvider(); if (!hasKey()) document.getElementById("engineBox2").classList.remove("hidden"); }
+})();
+
+function parseJSON(text){
+  let t = String(text || "").trim();
+  const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fence) t = fence[1].trim();
+  try { return JSON.parse(t); } catch(e) {}
+  const a = t.indexOf("{"), b = t.lastIndexOf("}");
+  if (a >= 0 && b > a) { try { return JSON.parse(t.slice(a, b + 1)); } catch(e) {} }
+  throw { code: "invalid_json" };
+}
+
+async function ai(input, { json = false, signal, maxTokens = 8000 } = {}){
+  if (sample) {
+    if (json) return sample.json(input, { signal, modelTier: "default" });
+    const r = await sample(input, { signal, modelTier: "default", cache: false });
+    return r.text;
+  }
+  const key = LS.get(keyName(), "");
+  if (!key) throw { code: "no_key" };
+  const turns = typeof input === "string" ? [{ role: "user", content: input }] : input;
+  const model = LS.get("parix-model-" + prov(), "");
+  let url, opts;
+  if (prov() === "gemini") {
+    if (!model) throw { code: "no_model" };
+    url = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model) + ":generateContent";
+    const gen = { maxOutputTokens: 32768 };
+    if (json) gen.responseMimeType = "application/json";
+    opts = { headers: { "content-type": "application/json", "x-goog-api-key": key },
+      body: JSON.stringify({ contents: turns.map(t => ({ role: t.role === "assistant" ? "model" : "user", parts: [{ text: t.content }] })), generationConfig: gen }) };
+  } else {
+    url = "https://api.anthropic.com/v1/messages";
+    opts = { headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: JSON.stringify({ model: model || "claude-sonnet-5-5", max_tokens: maxTokens, messages: turns }) };
+  }
+  let res;
+  try { res = await fetch(url, { method: "POST", signal, ...opts }); }
+  catch(e) { if (e.name === "AbortError") throw { code: "cancelled" }; throw { code: "network" }; }
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const m = data?.error?.message || "";
+    throw { code: res.status === 429 ? "rate_limited" : (res.status === 401 || res.status === 403 || /api key/i.test(m)) ? "bad_key" : "api", message: m };
+  }
+  let text;
+  if (prov() === "gemini") {
+    const c = (data.candidates || [])[0];
+    text = ((c && c.content && c.content.parts) || []).filter(p => !p.thought).map(p => p.text || "").join("");
+    if (!text) throw { code: "api", message: "The model returned no text" + (c && c.finishReason ? " (" + c.finishReason + ")" : "") + ". Try again or pick another model." };
+  } else {
+    text = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("\n");
+  }
+  return json ? parseJSON(text) : text;
+}
+
+const ERR = {
+  not_granted: "Allow Claude access when asked, then try again.",
+  rate_limited: "Limit reached. On the free Gemini tier wait a minute, or if the daily limit is used up, switch to a Flash-Lite model or try again tomorrow.",
+  no_model: "Pick a model in the SEO specialist tab first.",
+  invalid_json: "The answer came back in the wrong format. Click the button again.",
+  input_too_large: "The content is too long. Paste the main text only.",
+  no_key: "Add your API key in the SEO specialist tab first.",
+  bad_key: "The API key was rejected. Check it and save it again.",
+  network: "Couldn't reach Anthropic. Check your internet connection.",
+};
+const errText = e => ERR[e && e.code] || (e && e.message) || "Something went wrong. Try again in a moment.";
+
+/* ---------------- Local measurements (no AI) ---------------- */
+function toPlain(raw){
+  if (/<\/?(p|h[1-6]|div|li|ul|br)\b/i.test(raw)) {
+    const d = new DOMParser().parseFromString(raw, "text/html");
+    d.querySelectorAll("script,style").forEach(n => n.remove());
+    return d.body.innerText || d.body.textContent || "";
+  }
+  return raw.replace(/^#{1,6}\s+/gm, "").replace(/[*_`>]/g, "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+}
+function headingsOf(raw){
+  if (/<h[1-6]\b/i.test(raw)) {
+    const d = new DOMParser().parseFromString(raw, "text/html");
+    return [...d.querySelectorAll("h1,h2,h3,h4")].map(h => ({ level: +h.tagName[1], text: h.textContent.trim() }));
+  }
+  return [...raw.matchAll(/^(#{1,6})\s+(.+)$/gm)].map(m => ({ level: m[1].length, text: m[2].trim() }));
+}
+function measure(raw, kw){
+  const plain = toPlain(raw);
+  const words = plain.split(/\s+/).filter(w => /[\p{L}\p{N}]/u.test(w));
+  const wc = words.length;
+  const sentences = plain.split(/(?<=[.!?])\s+/).map(s => s.trim()).filter(s => s.split(/\s+/).length > 2);
+  const sLens = sentences.map(s => s.split(/\s+/).length);
+  const avgS = sLens.length ? sLens.reduce((a, b) => a + b, 0) / sLens.length : 0;
+  const longS = sLens.filter(n => n > 25).length;
+  const paras = plain.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+  const longP = paras.filter(p => p.split(/\s+/).length > 120).length;
+  const heads = headingsOf(raw);
+  const qHeads = heads.filter(h => /\?\s*$/.test(h.text)).length;
+  const links = (raw.match(/<a\s[^>]*href=|\]\([^)\s]+\)/gi) || []).length;
+  const out = { wc, readMin: Math.max(1, Math.round(wc / 230)), avgS, longS, sCount: sLens.length, paraCount: paras.length, longP, heads, qHeads, links };
+  if (kw) {
+    const k = kw.toLowerCase().trim();
+    const low = plain.toLowerCase();
+    let count = 0, i = 0;
+    while ((i = low.indexOf(k, i)) !== -1) { count++; i += k.length; }
+    out.kw = {
+      count,
+      density: wc ? (count * k.split(/\s+/).length / wc * 100) : 0,
+      inFirst100: words.slice(0, 100).join(" ").toLowerCase().includes(k),
+      inHeading: heads.some(h => h.text.toLowerCase().includes(k))
+    };
+  }
+  return out;
+}
+function quickChecks(m){
+  const c = [];
+  const st = (ok, warn) => ok ? "pass" : (warn ? "warn" : "fail");
+  c.push(["Length", st(m.wc >= 600, m.wc >= 300), `${m.wc} words, about ${m.readMin} min read. Service pages and articles usually need 600+ words to cover a topic well.`]);
+  c.push(["Headings", st(m.heads.length >= 4, m.heads.length >= 2), m.heads.length ? `${m.heads.length} headings found.` : "No headings found. Mark them with ## or paste HTML."]);
+  c.push(["Question headings", st(m.qHeads >= 3, m.qHeads >= 1), `${m.qHeads} headings are written as questions. AI answers match question-style headings well.`]);
+  c.push(["Sentence length", st(m.avgS <= 20, m.avgS <= 25), `Average ${m.avgS.toFixed(1)} words per sentence; ${m.longS} sentences are over 25 words.`]);
+  c.push(["Paragraph length", st(m.longP === 0, m.longP <= 2), m.longP ? `${m.longP} paragraphs are over 120 words. Split them.` : "No very long paragraphs."]);
+  c.push(["Links", st(m.links >= 3, m.links >= 1), `${m.links} links found. Link to related service pages, case studies and articles.`]);
+  if (m.kw) {
+    c.push(["Keyword in first 100 words", st(m.kw.inFirst100), m.kw.inFirst100 ? "Yes." : "Not found. Mention the main topic early."]);
+    c.push(["Keyword in a heading", st(m.kw.inHeading), m.kw.inHeading ? "Yes." : "Not found in any heading."]);
+    const d = m.kw.density;
+    c.push(["Keyword use", st(d >= 0.3 && d <= 2.5, d > 0), `Used ${m.kw.count} times (${d.toFixed(2)}%). ${d > 2.5 ? "This may read as keyword stuffing." : d < 0.3 ? "Use it, and close variations, a little more naturally." : "Natural level."}`]);
+  }
+  return c;
+}
+
+/* ---------------- Helpers ---------------- */
+function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function copyBtn(getText, label = "Copy"){
+  const b = el("button", "btn ghost", label);
+  b.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(getText()); b.textContent = "Copied"; }
+    catch(e) { b.textContent = "Copy failed"; }
+    setTimeout(() => b.textContent = label, 1600);
+  });
+  return b;
+}
+function list(arr){ const ul = el("ul"); (Array.isArray(arr) ? arr : []).forEach(x => ul.append(el("li", null, String(x)))); return ul; }
+function pill(status){ const s = ["pass","warn","fail"].includes(status) ? status : "warn"; return el("span", "pill " + s, s === "pass" ? "Good" : s === "warn" ? "Improve" : "Fix"); }
+function faqSchema(faqs){
+  return JSON.stringify({ "@context":"https://schema.org","@type":"FAQPage",
+    "mainEntity": faqs.map(f => ({"@type":"Question","name":f.q,"acceptedAnswer":{"@type":"Answer","text":f.a}})) }, null, 2);
+}
+
+/* ---------------- Run the audit ---------------- */
+const runBtn = document.getElementById("run"), stopBtn = document.getElementById("stop"), runMsg = document.getElementById("runMsg");
+let ctl = null, current = null;
+
+function ctxBlock(){
+  return {
+    type: document.getElementById("ptype").value,
+    kw: document.getElementById("kw").value.trim(),
+    aud: document.getElementById("aud").value.trim(),
+    url: document.getElementById("purl").value.trim(),
+    raw: document.getElementById("ptext").value
+  };
+}
+
+const SPECIALIST = `You are a senior SEO specialist and AI-search (GEO/AEO) consultant with 15 years of experience. You work for Parix.ai, an AI workflow automation and SaaS development agency.
+You judge content for: classic Google SEO, Google AI Overviews / AI Mode (AEO), ChatGPT Search (Bing index), Perplexity and Gemini (GEO), and local search when a location is given.
+You care about: search intent match, clear structure, question-based headings with direct answers, a short key-takeaways summary, E-E-A-T (real experience, named author, proof, specific numbers), unique information gain, quotable self-contained statements, entity clarity (who Parix.ai is, what it does, for whom, where), local relevance (city/region mentions, local examples, service area) when a location is given, readability, internal linking, and conversion.
+Never invent facts, numbers, statistics, client names, prices or results. If something important is missing, say so explicitly.
+Be direct and specific. Every problem must come with a concrete fix.`;
+
+async function auditContent(c, signal){
+  const m = measure(c.raw, c.kw);
+  const prompt = `${SPECIALIST}
+
+Page type: ${c.type}
+Main keyword: ${c.kw || "not given, infer it"}
+Target market / location: ${c.aud || "not given, infer it"}
+Page: ${c.url || "not given"}
+Measured locally: ${m.wc} words, ${m.heads.length} headings (${m.qHeads} are questions), average sentence ${m.avgS.toFixed(1)} words, ${m.links} links.
+Placeholders like [ADD: ...] or [LINK: ...] are intentional gaps the author will fill; do not penalise their wording, but do list important ones under missing_facts.
+
+Audit the content and reply with ONLY one JSON object in exactly this shape:
+{
+ "overall": 0-100,
+ "scores": {"seo": 0-100, "ai_readiness": 0-100, "readability": 0-100, "trust": 0-100},
+ "verdict": "2 sentences: overall verdict and the single most important change",
+ "intent": "what the searcher wants and whether the page satisfies it",
+ "checks": [{"area":"SEO|AI|Local|Readability|Trust|Conversion","item":"what was checked","status":"pass|warn|fail","note":"short specific finding"}],
+ "fixes": [{"priority":"high|medium|low","problem":"specific problem","fix":"exactly what to do","example":"rewritten sentence or heading showing the fix, or empty"}],
+ "keywords": {"primary":"...","secondary":["..."],"missing_terms":["related terms and entities the page should mention"]},
+ "sections": [{"heading":"question-style H2","answer":"40-60 word answer capsule that starts with the direct answer"}],
+ "faqs": [{"q":"question a client would ask","a":"1-3 sentence answer based only on the content"}],
+ "missing_facts": ["specific fact the page should state, e.g. typical project timeline"],
+ "internal_links": [{"anchor":"anchor text","target":"which kind of Parix.ai page to link to"}],
+ "meta_title": "under 60 characters",
+ "meta_description": "under 155 characters",
+ "slug": "short-url-slug"
+}
+Give 12-16 checks, 5-10 fixes ordered by priority, 4-6 sections, 5-8 faqs, 3-6 missing_facts, 3-5 internal_links.
+
+CONTENT:
+"""
+${c.raw.slice(0, 80000)}
+"""`;
+  const data = await ai(prompt, { json: true, signal });
+  return { m, data };
+}
+
+runBtn.addEventListener("click", async () => {
+  const c = ctxBlock();
+  if (toPlain(c.raw).trim().split(/\s+/).length < 80) { runMsg.className = "msg err"; runMsg.textContent = "Paste more content first (at least a few paragraphs)."; return; }
+  ctl = new AbortController();
+  runBtn.disabled = true; stopBtn.classList.remove("hidden");
+  runMsg.className = "msg"; runMsg.textContent = "The SEO specialist is reading your content… usually 30–90 seconds.";
+  try {
+    const { m, data } = await auditContent(c, ctl.signal);
+    current = { ctx: c, m, data, chat: [] };
+    renderResult();
+    runMsg.textContent = "Done. Scroll down for the report.";
+  } catch(e) {
+    if (e && e.code === "cancelled") runMsg.textContent = "Stopped.";
+    else { runMsg.className = "msg err"; runMsg.textContent = errText(e); }
+  } finally { runBtn.disabled = false; stopBtn.classList.add("hidden"); }
+});
+stopBtn.addEventListener("click", () => ctl && ctl.abort());
+
+/* ---------------- Blog writer pipeline ---------------- */
+const $ = id => document.getElementById(id);
+let wCtl = null;
+function stepState(name, state){
+  const li = document.querySelector(`#wSteps li[data-s="${name}"]`);
+  if (li) { li.classList.remove("active", "ok"); if (state) li.classList.add(state); }
+}
+function wctx(){
+  return {
+    topic: $("wTopic").value.trim(), kw: $("wKw").value.trim(), loc: $("wLoc").value.trim(),
+    aud: $("wAud").value.trim(), len: +$("wLen").value, tone: $("wTone").value, lang: $("wLang").value,
+    author: $("wAuthor").value.trim(), cta: $("wCta").value.trim(), facts: $("wFacts").value.trim(),
+    links: $("wLinks").value.trim(), auto: $("wAuto").checked
+  };
+}
+function writeRules(w){
+  return `WRITING RULES (follow all):
+- Language: ${w.lang}. Tone: ${w.tone}. Audience: ${w.aud || "small and medium business owners"}.
+- Length: about ${w.len} words of body content.
+- Markdown only. One H1 (the title). Then:
+  1. A 2-3 sentence intro that states the direct answer to the main question in the first 2 sentences and includes the main keyword naturally.
+  2. A "## Key takeaways" section with 3-5 short bullet points.
+  3. 5-8 H2 sections. Most H2s are questions people actually ask. Directly under each H2, write a 40-60 word self-contained answer that starts with the answer, then supporting detail, steps, examples.
+  4. At least one comparison table or numbered step-by-step list where it helps.
+  5. A section with first-hand experience from Parix.ai based ONLY on the author's facts (results, tools, process, lessons).
+  ${w.loc ? `6. Local relevance for ${w.loc}: a section about this topic for businesses in ${w.loc}, mention the location naturally 3-5 times across the article (not stuffed), use local examples and context, and state that Parix.ai serves ${w.loc}.` : "6. Keep it globally relevant."}
+  7. "## Frequently asked questions" with 5-7 questions as ### headings, each answered in 1-3 sentences.
+  8. A short conclusion with the call to action: ${w.cta || "contact Parix.ai for a free consultation"}.
+- Mention Parix.ai as an entity clearly: what it does and who it helps, 2-4 times, not salesy.
+- Short paragraphs (max 3-4 sentences), most sentences under 20 words, active voice, no fluff, no clichés like "in today's fast-paced world", "unlock", "game-changer", "delve".
+- Write quotable, specific statements AI systems can cite on their own.
+- FACTS: use only facts from the author's notes or widely known general knowledge. NEVER invent statistics, percentages, studies, client names, prices or results. Where a number or source would strengthen a point, write a placeholder: [ADD: statistic + source] or [ADD: your real example].
+- Internal links: ${w.links ? "link naturally to these pages using descriptive anchor text, as Markdown links:\n" + w.links : "where an internal link belongs, write [LINK: anchor text → page type]."}
+- ${w.author ? `Byline line right under the H1: "By ${w.author}".` : "Add a byline placeholder under the H1: [ADD: author name and role]."}
+- Output ONLY the Markdown article, no commentary.`;
+}
+
+$("wRun").addEventListener("click", async () => {
+  const w = wctx();
+  const msg = $("wMsg");
+  if (w.topic.length < 8) { msg.className = "msg err"; msg.textContent = "Write the blog topic first."; return; }
+  if (!sample && !hasKey()) { $("engineBox2").classList.remove("hidden"); msg.className = "msg err"; msg.textContent = ERR.no_key; return; }
+  wCtl = new AbortController(); const signal = wCtl.signal;
+  $("wRun").disabled = true; $("wStop").classList.remove("hidden");
+  $("wSteps").classList.remove("hidden"); ["brief","write","audit","fix","final"].forEach(s => stepState(s, null));
+  ["audit","fix","final"].forEach(s => { const li = document.querySelector(`#wSteps li[data-s="${s}"]`); li.classList.toggle("hidden", !w.auto); });
+  $("wOut").classList.add("hidden");
+  msg.className = "msg"; msg.textContent = "This takes about 2–5 minutes. Keep this tab open.";
+  try {
+    // 1. Brief
+    stepState("brief", "active");
+    const brief = await ai(`${SPECIALIST}
+
+Create a content brief for a blog post.
+Topic: ${w.topic}
+Main keyword: ${w.kw || "choose the best one"}
+Location: ${w.loc || "global"}
+Audience: ${w.aud || "small and medium business owners"}
+Language: ${w.lang}
+
+Reply with ONLY JSON:
+{"intent":"what the searcher wants","primary_keyword":"...","secondary_keywords":["5-8"],"entities":["related concepts, tools, terms to cover"],"questions":["8-12 real questions people ask Google and AI assistants about this"],"local_angle":"how to make it locally relevant, or empty","titles":["3 title options under 60 characters, with the keyword"],"outline":[{"h2":"question-style heading","covers":"what this section answers"}]}`, { json: true, signal });
+    stepState("brief", "ok");
+
+    // 2. Write
+    stepState("write", "active");
+    const writePrompt = `${SPECIALIST}
+
+Write a complete, publish-ready blog post for parix.ai.
+Topic: ${w.topic}
+Use title: ${(brief.titles || [])[0] || w.topic}
+
+CONTENT BRIEF:
+${JSON.stringify(brief)}
+
+AUTHOR'S REAL FACTS AND EXPERIENCE:
+${w.facts || "(none given — use [ADD: ...] placeholders wherever first-hand proof is needed)"}
+
+${writeRules(w)}`;
+    let article = (await ai(writePrompt, { signal, maxTokens: 12000 })).trim();
+    stepState("write", "ok");
+
+    let audit = null, first = null;
+    const actx = () => ({ type: "Blog article", kw: brief.primary_keyword || w.kw, aud: [w.aud, w.loc].filter(Boolean).join(", "), url: (brief.titles || [])[0] || w.topic, raw: article });
+    if (w.auto) {
+      // 3. Audit
+      stepState("audit", "active");
+      audit = await auditContent(actx(), signal);
+      first = audit.data.overall;
+      stepState("audit", "ok");
+
+      // 4. Fix
+      stepState("fix", "active");
+      article = (await ai(`${SPECIALIST}
+
+Improve this blog post by applying every fix below. Keep everything that already works. Keep all true facts and all [ADD: ...] placeholders unless the fix removes the need.
+FIXES: ${JSON.stringify(audit.data.fixes)}
+MISSING TERMS TO COVER: ${JSON.stringify(audit.data.keywords?.missing_terms || [])}
+
+AUTHOR'S REAL FACTS:
+${w.facts || "(none)"}
+
+${writeRules(w)}
+
+ARTICLE:
+"""
+${article}
+"""`, { signal, maxTokens: 12000 })).trim();
+      stepState("fix", "ok");
+
+      // 5. Final check
+      stepState("final", "active");
+      audit = await auditContent(actx(), signal);
+      stepState("final", "ok");
+    }
+    renderWriter({ w, brief, article, audit, first, ctx: actx() });
+    msg.textContent = "Done.";
+  } catch(e) {
+    document.querySelectorAll("#wSteps li.active").forEach(li => li.classList.remove("active"));
+    if (e && e.code === "cancelled") msg.textContent = "Stopped.";
+    else { msg.className = "msg err"; msg.textContent = errText(e); }
+  } finally { $("wRun").disabled = false; $("wStop").classList.add("hidden"); }
+});
+$("wStop").addEventListener("click", () => wCtl && wCtl.abort());
+
+/* Markdown -> safe HTML (for preview and WordPress copy) */
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function inline(s){
+  s = esc(s);
+  s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>");
+  s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|\/[^)\s]*|[a-z0-9.-]+\.[a-z]{2,}[^)\s]*)\)/gi, (m, t, u) => `<a href="${/^https?:|^\//.test(u) ? u : "https://" + u}">${t}</a>`);
+  s = s.replace(/\[(ADD|LINK):([^\]]*)\]/g, '<mark class="ph">[$1:$2]</mark>');
+  return s;
+}
+function mdToHtml(md){
+  const L = md.replace(/\r/g, "").split("\n"); let out = [], i = 0;
+  while (i < L.length) {
+    let l = L[i];
+    if (!l.trim()) { i++; continue; }
+    let m;
+    if ((m = l.match(/^(#{1,6})\s+(.*)$/))) { out.push(`<h${m[1].length}>${inline(m[2])}</h${m[1].length}>`); i++; continue; }
+    if (/^\s*\|.*\|\s*$/.test(l) && i + 1 < L.length && /^\s*\|?\s*:?-{2,}/.test(L[i+1])) {
+      const row = r => r.trim().replace(/^\||\|$/g, "").split("|").map(c => c.trim());
+      const head = row(l); i += 2; const body = [];
+      while (i < L.length && /^\s*\|.*\|\s*$/.test(L[i])) { body.push(row(L[i])); i++; }
+      out.push(`<table><thead><tr>${head.map(c => `<th>${inline(c)}</th>`).join("")}</tr></thead><tbody>${body.map(r => `<tr>${r.map(c => `<td>${inline(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`);
+      continue;
+    }
+    if (/^\s*[-*]\s+/.test(l)) { const it = []; while (i < L.length && /^\s*[-*]\s+/.test(L[i])) { it.push(L[i].replace(/^\s*[-*]\s+/, "")); i++; } out.push("<ul>" + it.map(x => `<li>${inline(x)}</li>`).join("") + "</ul>"); continue; }
+    if (/^\s*\d+[.)]\s+/.test(l)) { const it = []; while (i < L.length && /^\s*\d+[.)]\s+/.test(L[i])) { it.push(L[i].replace(/^\s*\d+[.)]\s+/, "")); i++; } out.push("<ol>" + it.map(x => `<li>${inline(x)}</li>`).join("") + "</ol>"); continue; }
+    if (/^>\s?/.test(l)) { const q = []; while (i < L.length && /^>\s?/.test(L[i])) { q.push(L[i].replace(/^>\s?/, "")); i++; } out.push(`<blockquote>${inline(q.join(" "))}</blockquote>`); continue; }
+    const p = []; while (i < L.length && L[i].trim() && !/^(#{1,6}\s|\s*[-*]\s|\s*\d+[.)]\s|>|\s*\|)/.test(L[i])) { p.push(L[i]); i++; }
+    if (p.length) out.push(`<p>${inline(p.join(" "))}</p>`); else { out.push(`<p>${inline(l)}</p>`); i++; }
+  }
+  return out.join("\n");
+}
+function faqsFromMd(md){
+  const part = md.split(/^##\s+Frequently asked questions.*$/mi)[1]; if (!part) return [];
+  const sec = part.split(/^##\s+/m)[0]; const res = [];
+  sec.split(/^###\s+/m).slice(1).forEach(b => { const [q, ...rest] = b.split("\n"); const a = rest.join(" ").replace(/\s+/g, " ").trim(); if (q.trim() && a) res.push({ q: q.trim(), a: toPlain(a).trim() }); });
+  return res;
+}
+
+let downloads = null;
+(async () => { try { if (window.claude && window.claude.use) downloads = await claude.use("downloads"); } catch(e) {} })();
+async function saveFile(name, text){
+  if (downloads) { try { await downloads.save({ filename: name, data: text }); return; } catch(e) { return; } }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: "text/markdown" })); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+function renderWriter({ w, brief, article, audit, first, ctx }){
+  const out = $("wOut"); out.innerHTML = ""; out.classList.remove("hidden");
+  const d = audit ? audit.data : null;
+
+  const p1 = el("div", "panel res");
+  if (d) {
+    const sc = el("div", "scores");
+    const t0 = el("div", "tile main"); t0.append(el("div", "n", num(d.overall)), el("div", "l", first != null && first !== d.overall ? `Final score (first draft: ${num(first)})` : "Final score / 100"));
+    sc.append(t0);
+    [["seo","Google SEO"],["ai_readiness","AI readiness"],["readability","Readability"],["trust","Trust (E-E-A-T)"]].forEach(([k, l]) => { const t = el("div", "tile"); t.append(el("div", "n", num(d.scores && d.scores[k])), el("div", "l", l)); sc.append(t); });
+    p1.append(sc);
+    if (d.verdict) { const v = el("p", null, d.verdict); v.style.margin = "14px 0 0"; p1.append(v); }
+  } else p1.append(el("h3", null, "Your blog is ready"));
+  const phs = (article.match(/\[ADD:[^\]]*\]/g) || []);
+  p1.append(el("p", "note", phs.length
+    ? `Fill in ${phs.length} highlighted [ADD: …] ${phs.length === 1 ? "placeholder" : "placeholders"} with your real facts before publishing. Real numbers and examples are what make AI cite you.`
+    : "No placeholders left. Read it once yourself before publishing."));
+  const acts = el("div", "actions");
+  acts.append(copyBtn(() => article, "Copy Markdown"), copyBtn(() => mdToHtml(article), "Copy HTML for WordPress"));
+  const dl = el("button", "btn ghost", "Download .md"); dl.onclick = () => saveFile((d?.slug || "blog-post") + ".md", article); acts.append(dl);
+  if (d) { const rep = el("button", "btn ghost", "Open full SEO report"); rep.onclick = () => { current = { ctx, m: audit.m, data: d, chat: [] }; renderResult(); $("tab-seo").click(); }; acts.append(rep); }
+  p1.append(acts);
+  out.append(p1);
+
+  const p2 = el("div", "panel res");
+  p2.append(el("h3", null, "Article preview"));
+  const pv = el("div", "preview"); pv.innerHTML = mdToHtml(article); p2.append(pv);
+  out.append(p2);
+
+  const p3 = el("div", "panel res");
+  p3.append(el("h3", null, "Yoast SEO settings"));
+  const titles = (brief.titles || []);
+  if (titles.length) { p3.append(el("p", "hint", "Title options:")); const ul = el("ul", "titles"); titles.forEach(t => { const li = el("li", null, t + " "); li.append(copyBtn(() => t)); ul.append(li); }); p3.append(ul); }
+  [["SEO title", d?.meta_title], ["Meta description", d?.meta_description], ["URL slug", d?.slug], ["Focus keyphrase", brief.primary_keyword || w.kw]].forEach(([l, v]) => {
+    if (!v) return; const q = el("div", "qa"); q.append(el("h4", null, `${l} (${v.length} characters)`), el("p", null, v), copyBtn(() => v)); p3.append(q);
+  });
+  out.append(p3);
+
+  const faqs = faqsFromMd(article);
+  const p4 = el("div", "panel res");
+  p4.append(el("h3", null, "Schema"));
+  p4.append(el("p", "note", "Yoast already adds Article schema to blog posts automatically. For the FAQ, the easiest option is to rebuild the FAQ section with Yoast's FAQ block. Use the FAQ JSON-LD below only if you keep the FAQ as normal text, never both."));
+  if (faqs.length) {
+    const schema = faqSchema(faqs);
+    const head = el("div", "actions"); head.style.margin = "12px 0 8px";
+    head.append(el("strong", null, `FAQ schema (${faqs.length} questions)`), copyBtn(() => '<script type="application/ld+json">\n' + schema + '\n<\/script>'));
+    const pre = el("pre"); pre.textContent = schema; p4.append(head, pre);
+  }
+  out.append(p4);
+
+  if (d && (d.fixes || []).some(f => f.priority === "high")) {
+    const p5 = el("div", "panel res");
+    p5.append(el("h3", null, "Still worth fixing"));
+    p5.append(list(d.fixes.filter(f => f.priority === "high").map(f => `${f.problem} → ${f.fix}`)));
+    out.append(p5);
+  }
+  p1.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+}
+
+/* ---------------- Render report ---------------- */
+function num(v){ return Number.isFinite(+v) ? Math.round(+v) : "–"; }
+function renderResult(){
+  const { data: d, m } = current;
+  const r = document.getElementById("result"); r.innerHTML = ""; r.classList.remove("hidden");
+
+  // Scores
+  const p1 = el("div", "panel res");
+  const sc = el("div", "scores");
+  const t0 = el("div", "tile main"); t0.append(el("div", "n", num(d.overall)), el("div", "l", "Overall score / 100"));
+  sc.append(t0);
+  [["seo","Google SEO"],["ai_readiness","AI readiness"],["readability","Readability"],["trust","Trust (E-E-A-T)"]].forEach(([k, l]) => {
+    const t = el("div", "tile"); t.append(el("div", "n", num(d.scores && d.scores[k])), el("div", "l", l)); sc.append(t);
+  });
+  p1.append(sc);
+  if (d.verdict) { const v = el("p", null, d.verdict); v.style.margin = "14px 0 0"; p1.append(v); }
+  if (d.intent) { const v = el("p", "hint", "Search intent: " + d.intent); v.style.margin = "8px 0 0"; p1.append(v); }
+  const ex = el("div", "actions"); ex.style.marginTop = "14px";
+  ex.append(copyBtn(() => reportText(), "Copy full report"));
+  p1.append(ex);
+  r.append(p1);
+
+  // Fixes
+  const p2 = el("div", "panel res");
+  p2.append(el("h3", null, "What to fix, in order"));
+  const order = { high: 0, medium: 1, low: 2 };
+  (d.fixes || []).slice().sort((a, b) => (order[a.priority] ?? 1) - (order[b.priority] ?? 1)).forEach(f => {
+    const box = el("div", "fix");
+    const h = el("h4");
+    const pr = f.priority === "high" ? "fail" : f.priority === "low" ? "pass" : "warn";
+    h.append(el("span", "pill " + pr, (f.priority || "medium") + " priority"), document.createTextNode(f.problem || ""));
+    box.append(h, el("p", null, f.fix || ""));
+    if (f.example) box.append(el("p", "ex", f.example));
+    p2.append(box);
+  });
+  r.append(p2);
+
+  // Checks table (AI + local)
+  const p3 = el("div", "panel res");
+  p3.append(el("h3", null, "Full checklist"));
+  const wrap = el("div", "tbl"); const tb = el("table");
+  const hr = el("tr"); ["Area","Check","Result","Finding"].forEach(x => hr.append(el("th", null, x))); tb.append(hr);
+  quickChecks(m).forEach(([item, st, note]) => { const tr = el("tr"); const td = el("td"); td.append(pill(st)); tr.append(el("td", null, "Measured"), el("td", null, item), td, el("td", null, note)); tb.append(tr); });
+  (d.checks || []).forEach(ch => { const tr = el("tr"); const td = el("td"); td.append(pill(ch.status)); tr.append(el("td", null, ch.area || ""), el("td", null, ch.item || ""), td, el("td", null, ch.note || "")); tb.append(tr); });
+  wrap.append(tb); p3.append(wrap);
+  r.append(p3);
+
+  // Keywords + facts + links
+  const p4 = el("div", "panel res");
+  p4.append(el("h3", null, "Keywords and topics"));
+  const k = d.keywords || {};
+  p4.append(el("p", null, "Primary: " + (k.primary || "–")));
+  if ((k.secondary || []).length) p4.append(el("p", null, "Secondary: " + k.secondary.join(", ")));
+  if ((k.missing_terms || []).length) { p4.append(el("p", "hint", "Mention these related terms naturally:")); p4.append(list(k.missing_terms)); }
+  const h2 = el("h3", null, "Facts to add"); h2.style.marginTop = "18px"; p4.append(h2, list(d.missing_facts));
+  if ((d.internal_links || []).length) {
+    const h3 = el("h3", null, "Internal links to add"); h3.style.marginTop = "18px"; p4.append(h3);
+    p4.append(list(d.internal_links.map(l => `"${l.anchor}" → ${l.target}`)));
+  }
+  r.append(p4);
+
+  // Sections
+  const p5 = el("div", "panel res");
+  p5.append(el("h3", null, "Question headings with answer capsules"));
+  p5.append(el("p", "note", "Use each question as an H2 and put its answer directly underneath. These are what AI answers quote."));
+  (d.sections || []).forEach(s => { const q = el("div", "qa"); q.append(el("h4", null, s.heading || ""), el("p", null, s.answer || ""), copyBtn(() => `## ${s.heading}\n\n${s.answer}`)); p5.append(q); });
+  r.append(p5);
+
+  // FAQ
+  const faqs = (d.faqs || []).filter(f => f && f.q && f.a);
+  if (faqs.length) {
+    const p6 = el("div", "panel res");
+    p6.append(el("h3", null, "FAQ section"));
+    p6.append(el("p", "note", "Best option: add these with Yoast's FAQ block, which creates the schema for you. Use the JSON-LD only if you are not using the Yoast block, never both."));
+    faqs.forEach(f => { const q = el("div", "qa"); q.append(el("h4", null, f.q), el("p", null, f.a)); p6.append(q); });
+    const schema = faqSchema(faqs);
+    const head = el("div", "actions"); head.style.margin = "12px 0 8px";
+    head.append(el("strong", null, "FAQ schema (JSON-LD)"), copyBtn(() => '<script type="application/ld+json">\n' + schema + '\n<\/script>'));
+    const pre = el("pre"); pre.textContent = schema;
+    p6.append(head, pre); r.append(p6);
+  }
+
+  // Meta
+  const p7 = el("div", "panel res");
+  p7.append(el("h3", null, "Yoast SEO settings"));
+  [["SEO title", d.meta_title], ["Meta description", d.meta_description], ["URL slug", d.slug]].forEach(([l, v]) => {
+    const q = el("div", "qa"); q.append(el("h4", null, l + (v ? ` (${v.length} characters)` : "")), el("p", null, v || "–"), copyBtn(() => v || "")); p7.append(q);
+  });
+  r.append(p7);
+
+  // Rewrite
+  const p8 = el("div", "panel res");
+  p8.append(el("h3", null, "Improved version"));
+  p8.append(el("p", "hint", "The specialist rewrites your content with every fix applied. Facts it doesn't have are marked [ADD: …] for you to fill in."));
+  const ra = el("div", "actions");
+  const rb = el("button", "btn", "Rewrite with all fixes");
+  const rmsg = el("span", "msg");
+  ra.append(rb, rmsg); p8.append(ra);
+  const out = el("div", "draft hidden"); out.style.marginTop = "14px";
+  const oa = el("div", "actions hidden"); oa.style.marginTop = "10px";
+  oa.append(copyBtn(() => out.textContent, "Copy improved version"));
+  p8.append(out, oa);
+  rb.onclick = async () => {
+    rb.disabled = true; rmsg.className = "msg"; rmsg.textContent = "Rewriting… this can take one to two minutes.";
+    const c = current.ctx;
+    const prompt = `${SPECIALIST}
+
+Rewrite the content below as a complete, publish-ready ${c.type} in Markdown.
+Main keyword: ${c.kw || d.keywords?.primary || "infer it"}. Target market: ${c.aud || "infer it"}.
+Apply every fix from your audit:
+${JSON.stringify({ fixes: d.fixes, sections: d.sections, missing_terms: d.keywords?.missing_terms, internal_links: d.internal_links }, null, 0)}
+
+Rules:
+- One H1, then question-style H2s, each followed immediately by a 40-60 word direct answer, then supporting detail.
+- Short paragraphs (max 4 sentences), sentences mostly under 20 words, plain English.
+- Keep every true fact from the original. Do NOT invent numbers, clients, prices, results, team names or dates. Where one is needed, write a placeholder like [ADD: typical project timeline].
+- Where an internal link belongs, write [LINK: anchor text → target page type].
+- End with an FAQ section (## Frequently asked questions, ### for each question) and a short call to action.
+- Output only the Markdown article. No commentary before or after.
+
+ORIGINAL CONTENT:
+"""
+${c.raw.slice(0, 80000)}
+"""`;
+    try {
+      const text = await ai(prompt, { maxTokens: 12000 });
+      out.textContent = text.trim(); out.classList.remove("hidden"); oa.classList.remove("hidden");
+      rmsg.textContent = "Done. Fill in every [ADD: …] before publishing, then check the new version again.";
+    } catch(e) { rmsg.className = "msg err"; rmsg.textContent = errText(e); }
+    finally { rb.disabled = false; }
+  };
+  r.append(p8);
+
+  // Chat
+  const p9 = el("div", "panel res");
+  p9.append(el("h3", null, "Ask the SEO specialist"));
+  p9.append(el("p", "hint", "Ask anything about this page. You can write in English or Roman Urdu."));
+  const chips = el("div", "chips");
+  ["Which fix will help the most?", "Write a better introduction", "Is this page good enough to publish?", "Mujhe Roman Urdu mein samjhao kya theek karna hai"].forEach(q => {
+    const b = el("button", "btn ghost", q); b.onclick = () => { qInput.value = q; send(); }; chips.append(b);
+  });
+  const log = el("div", "chatlog");
+  const qInput = el("textarea"); qInput.style.minHeight = "80px"; qInput.placeholder = "Type your question…";
+  const sa = el("div", "actions"); sa.style.marginTop = "10px";
+  const sb = el("button", "btn", "Ask"); const smsg = el("span", "msg");
+  sa.append(sb, smsg);
+  p9.append(chips, log, qInput, sa);
+  r.append(p9);
+  const ctxIntro = () => `${SPECIALIST}
+You already audited this content. Answer the user's questions about it. Reply in the same language the user writes in (English or Roman Urdu). Keep answers practical and concise.
+
+AUDIT RESULT: ${JSON.stringify({ overall: d.overall, scores: d.scores, verdict: d.verdict, fixes: d.fixes, missing_facts: d.missing_facts }, null, 0)}
+
+CONTENT:
+"""
+${current.ctx.raw.slice(0, 60000)}
+"""`;
+  async function send(){
+    const q = qInput.value.trim(); if (!q) return;
+    qInput.value = ""; log.append(el("div", "bubble me", q));
+    current.chat.push({ role: "user", content: q });
+    sb.disabled = true; smsg.className = "msg"; smsg.textContent = "Thinking…";
+    try {
+      const turns = [{ role: "user", content: ctxIntro() }, { role: "assistant", content: "Understood. I have the audit and the content. What would you like to know?" }, ...current.chat];
+      const a = await ai(turns, { maxTokens: 3000 });
+      current.chat.push({ role: "assistant", content: a });
+      log.append(el("div", "bubble ai", a.trim())); smsg.textContent = "";
+    } catch(e) { current.chat.pop(); smsg.className = "msg err"; smsg.textContent = errText(e); }
+    finally { sb.disabled = false; }
+  }
+  sb.onclick = send;
+
+  p1.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+}
+
+function reportText(){
+  const { data: d, m, ctx } = current;
+  const L = [];
+  L.push(`SEO & AI visibility report — ${ctx.url || ctx.type}`, "");
+  L.push(`Overall: ${num(d.overall)}/100 | SEO ${num(d.scores?.seo)} | AI readiness ${num(d.scores?.ai_readiness)} | Readability ${num(d.scores?.readability)} | Trust ${num(d.scores?.trust)}`);
+  if (d.verdict) L.push("", d.verdict);
+  L.push("", "FIXES");
+  (d.fixes || []).forEach(f => L.push(`- [${f.priority}] ${f.problem} → ${f.fix}`));
+  L.push("", "MEASURED");
+  quickChecks(m).forEach(([i, s, n]) => L.push(`- ${i}: ${s} — ${n}`));
+  L.push("", "CHECKS");
+  (d.checks || []).forEach(c => L.push(`- ${c.area} / ${c.item}: ${c.status} — ${c.note}`));
+  L.push("", "FACTS TO ADD"); (d.missing_facts || []).forEach(x => L.push("- " + x));
+  L.push("", "QUESTION HEADINGS"); (d.sections || []).forEach(s => L.push(`## ${s.heading}`, s.answer, ""));
+  L.push("FAQ"); (d.faqs || []).forEach(f => L.push(`Q: ${f.q}`, `A: ${f.a}`, ""));
+  L.push(`SEO title: ${d.meta_title || ""}`, `Meta description: ${d.meta_description || ""}`, `Slug: ${d.slug || ""}`);
+  return L.join("\n");
+}
+
+/* ---------------- Tabs ---------------- */
+const tabs = [["tab-write","view-write"],["tab-seo","view-seo"],["tab-check","view-check"]];
+tabs.forEach(([t, v]) => document.getElementById(t).addEventListener("click", () => {
+  tabs.forEach(([t2, v2]) => {
+    document.getElementById(t2).setAttribute("aria-selected", t2 === t ? "true" : "false");
+    document.getElementById(v2).classList.toggle("hidden", v2 !== v);
+  });
+}));
+
+/* ---------------- Checklist ---------------- */
+const GROUPS = [
+  { title: "1. Let Google and Bing find every page",
+    intro: "AI Overviews use Google's index. ChatGPT Search uses Bing's index. If a page isn't indexed, no AI can cite it.",
+    items: [
+      { id:"gsc", t:"Verify parix.ai in Google Search Console and submit the sitemap", w:"Submit the Yoast sitemap: parix.ai/sitemap_index.xml. Then check Pages → Indexing for errors.", u:"Google ko batayein ke aap ke saare pages kahan hain." },
+      { id:"bing", t:"Add parix.ai to Bing Webmaster Tools", w:"Use 'Import from Google Search Console' to set it up quickly. This is the base for ChatGPT and Copilot visibility.", u:"ChatGPT Bing se results leta hai, is liye Bing zaroori hai." },
+      { id:"indexnow", t:"Turn on IndexNow (only once)", w:"First check whether Yoast already sends IndexNow pings. If not, install the official IndexNow plugin. Don't run two IndexNow tools.", u:"Naya ya update page foran Bing tak pohanchta hai." },
+      { id:"robots", t:"Check robots.txt allows search and AI crawlers", w:"Open parix.ai/robots.txt. Googlebot, Bingbot, OAI-SearchBot, ChatGPT-User, PerplexityBot and Claude-SearchBot must not be blocked.", u:"Agar bot block hai to AI site parh hi nahi sakta." },
+      { id:"cdn", t:"Check Cloudflare or your firewall for 'block AI bots'", w:"Cloudflare and some security plugins can block AI crawlers by default. Allow the search crawlers above.", u:"Firewall chupke se AI bots rok sakti hai, check karein." },
+      { id:"noindex", t:"Confirm your key pages are indexed and not noindex", w:"Use URL Inspection in Search Console on the home page, every service page and your best articles.", u:"Aham pages Google mein hone chahiye." }
+    ]},
+  { title: "2. Make parix.ai a clear, trusted business",
+    intro: "AI systems compare what different sites say about you. Clear, consistent facts make you easier to recommend.",
+    items: [
+      { id:"orgschema", t:"Complete Yoast's Organization settings", w:"Yoast → Settings → Site representation: official name, logo, and every social profile (LinkedIn, X, YouTube, Clutch).", u:"Google ko pata chale ke Parix.ai ek asli company hai." },
+      { id:"facts", t:"Make your facts match everywhere", w:"Same founding year, location, team size and services on your site, LinkedIn, Clutch, Sortlist, TechBehemoths and Google Business Profile.", u:"Har jagah ek jaisi maloomat honi chahiye." },
+      { id:"gbp", t:"Create or update Google Business Profile", w:"Add services, real address or service area, photos, and ask happy clients for reviews.", u:"Local searches aur Gemini ke liye zaroori." },
+      { id:"about", t:"Strengthen the About page", w:"Founders and team with real names, photos and experience, plus the company story and contact details.", u:"Asli log dikhenge to trust barhega." },
+      { id:"reviews", t:"Collect reviews on Clutch or G2", w:"AI answers about 'best agency for X' often draw on review sites. Aim for five detailed reviews.", u:"Doosri sites par reviews AI ke liye saboot hain." }
+    ]},
+  { title: "3. Write content AI can quote",
+    intro: "This part matters most. Run each page through the SEO specialist tab.",
+    items: [
+      { id:"svc", t:"Check and fix every service page with the SEO specialist", w:"Aim for an overall score of 80+ and no high-priority fixes left.", u:"Har service page ko specialist se check karwayein." },
+      { id:"faq", t:"Add an FAQ section with Yoast's FAQ block", w:"Five to eight real questions clients ask. The Yoast FAQ block adds FAQ schema automatically.", u:"Clients jo sawal poochte hain, wohi FAQ mein daalein." },
+      { id:"cases", t:"Publish three case studies with real numbers", w:"Problem, what you built, and the result: hours saved, cost reduced, revenue gained. Unique data is what gets cited.", u:"Asli results wali kahaniyan AI ko sab se zyada pasand hain." },
+      { id:"cluster", t:"Build one topic cluster per main service", w:"Eight to twelve linked articles around one service, all linking back to the service page.", u:"Ek topic par kai articles se aap expert lagte hain." },
+      { id:"compare", t:"Write comparison and 'how much does it cost' pages", w:"e.g. 'Zapier vs custom AI automation' or 'How much does AI workflow automation cost?'", u:"Log AI se yehi sawal poochte hain." },
+      { id:"fresh", t:"Refresh key pages every three months", w:"Update facts, examples and the date. Stale pages are cited less.", u:"Purana content update karte rahein." }
+    ]},
+  { title: "4. Measure every month",
+    intro: "No tool can see inside AI answers for you, so check by hand.",
+    items: [
+      { id:"prompts", t:"Ask the AI platforms your ten target questions", w:"Ask ChatGPT, Perplexity, Gemini and Google (AI Overview) questions like 'best AI automation agency for small business'. Note whether parix.ai appears.", u:"Har mahine dekhein ke AI aap ka naam leta hai ya nahi." },
+      { id:"ga4", t:"Track AI referral traffic in GA4", w:"Reports → Acquisition → Traffic acquisition, filtered by source: chatgpt.com, perplexity.ai, gemini.google.com, copilot.microsoft.com.", u:"Dekhein ke AI se kitne log site par aa rahe hain." }
+    ]}
+];
+const ALL = GROUPS.flatMap(g => g.items.map(i => i.id));
+let done = LS.get("parix-aiv", {});
+let saveFn = null, saveTimer;
+function renderChecklist(){
+  const box = document.getElementById("groups"); box.innerHTML = "";
+  GROUPS.forEach(g => {
+    const sec = el("div", "group"); sec.append(el("h2", null, g.title), el("p", null, g.intro));
+    g.items.forEach(it => {
+      const row = el("div", "item" + (done[it.id] ? " done" : ""));
+      const cb = el("input"); cb.type = "checkbox"; cb.id = "c-" + it.id; cb.checked = !!done[it.id];
+      cb.addEventListener("change", () => { done[it.id] = cb.checked; row.classList.toggle("done", cb.checked); updateMeter(); persist(); });
+      const body = el("div"); const lb = el("label", null, it.t); lb.htmlFor = cb.id;
+      body.append(lb, el("p", "why", it.w), el("p", "ur", it.u));
+      row.append(cb, body); sec.append(row);
+    });
+    box.append(sec);
+  });
+  updateMeter();
+}
+function updateMeter(){
+  const n = ALL.filter(id => done[id]).length, pct = Math.round(n / ALL.length * 100);
+  document.getElementById("pct").textContent = pct + "%";
+  document.getElementById("barfill").style.width = pct + "%";
+  document.getElementById("count").textContent = n + " of " + ALL.length + " done";
+}
+function persist(){
+  LS.set("parix-aiv", done);
+  if (!saveFn) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => saveFn({ ...done }).catch(() => {}), 600);
+}
+renderChecklist();
+(async () => {
+  try {
+    if (!window.claude || !window.claude.use) return;
+    const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+    if (!db || !user) return;
+    const uid = await user.id(); if (!uid) return;
+    const ref = db.doc("data/users/" + uid + "/progress");
+    const snap = await ref.get();
+    if (snap.exists) done = Object.assign({}, (snap.data() || {}).done || {}, done);
+    saveFn = d => ref.set({ done: d, updated: new Date().toISOString() });
+    renderChecklist();
+    document.getElementById("saveStatus").textContent = "Progress is saved to your Claude account.";
+    persist();
+  } catch(e) {}
+})();
+</script>
+</body>
+</html>
