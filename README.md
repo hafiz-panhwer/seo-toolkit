@@ -1,6 +1,6 @@
-# Parix.ai SEO & AI Visibility Toolkit
+# SEO & AI Visibility Toolkit
 
-A single-file, self-contained HTML tool from Parix.ai for SEO and AI visibility work. It includes:
+A single-file, self-contained HTML tool for SEO and AI visibility work. It includes:
 
 - **Blog writer** – drafts SEO-friendly blog posts
 - **SEO specialist checker** – reviews content against SEO and AI-visibility best practices
