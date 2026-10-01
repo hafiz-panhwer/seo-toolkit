@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>SEO & AI Visibility Toolkit</title>
+<meta name="description" content="Free SEO and AI visibility toolkit: write SEO-ready blog posts, audit any page like an SEO specialist, and follow a setup checklist for Google, ChatGPT and Perplexity. Bring your own free API key.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B6E78'/%3E%3Ccircle cx='28' cy='28' r='13' fill='none' stroke='%23fff' stroke-width='6'/%3E%3Cpath d='M38 38l12 12' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -33,7 +35,11 @@ h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",system-ui,sans-serif;li
 header.top{display:grid;gap:10px;margin-bottom:18px}
 header.top h1{font-size:clamp(1.8rem,4.5vw,2.5rem);font-weight:700;letter-spacing:-.01em}
 header.top p{margin:0;color:var(--muted);max-width:64ch}
-nav.tabs{display:flex;gap:6px;border-bottom:2px solid var(--line);margin:8px 0 22px;overflow-x:auto}
+nav.tabs{display:flex;gap:6px;border-bottom:2px solid var(--line);margin:8px 0 22px;overflow-x:auto;scrollbar-width:thin}
+@media (max-width:560px){
+  nav.tabs{-webkit-mask-image:linear-gradient(90deg,#000 80%,transparent);mask-image:linear-gradient(90deg,#000 80%,transparent);padding-right:28px}
+  nav.tabs.end{-webkit-mask-image:none;mask-image:none}
+}
 nav.tabs button{appearance:none;border:0;background:none;color:var(--muted);font:600 1rem "Public Sans",sans-serif;padding:10px 14px;margin-bottom:-2px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
 nav.tabs button[aria-selected="true"]{color:var(--ink);border-color:var(--accent)}
 button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
@@ -117,6 +123,8 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding
 .steps li.ok{color:var(--ink)}
 .steps li.ok::before{border-color:var(--good);background:var(--good)}
 .preview{border:1px solid var(--line);border-radius:10px;padding:6px 20px;max-height:640px;overflow:auto;background:var(--bg)}
+.preview a,.bubble a,.qa a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+.row3 .field,.row2 .field{align-self:start}
 .preview h1{font-size:1.7rem;margin:18px 0 10px}
 .preview h2{font-size:1.3rem;margin:22px 0 8px}
 .preview h3{font-size:1.08rem;margin:16px 0 6px}
@@ -146,7 +154,7 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding
   <section id="view-write" role="tabpanel" aria-labelledby="tab-write" class="stack">
     <div class="panel engine hidden" id="engineBox2">
       <h2>Connect an AI to write</h2>
-      <p class="hint">Add a free Gemini API key in the <strong>SEO specialist</strong> tab first, then come back here.</p>
+      <p class="hint">Add a free API key (OpenRouter or Gemini) in the <strong>SEO specialist</strong> tab first, then come back here.</p>
     </div>
     <div class="panel">
       <div class="field">
@@ -227,7 +235,8 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding
         <select id="model"></select>
         <span class="hint" id="modelHelp"></span>
       </div>
-      <p class="hint" style="margin-top:4px">The key is stored only in this browser. Never upload this file to your website after saving a key.</p>
+      <label class="actions" style="margin-top:6px;font-size:.95rem"><input type="checkbox" id="keySession" style="width:18px;height:18px;accent-color:var(--accent)"> Forget my key when I close this tab (safer on shared computers)</label>
+      <p class="hint" style="margin-top:4px">Your key is saved only in your own browser, never on this website or in the file. Only use keys you created yourself.</p>
     </div>
 
     <div class="panel">
@@ -311,7 +320,17 @@ async function loadOpenRouterModels(){
     help.textContent = "Models marked FREE cost nothing (they have daily limits). If one is busy, pick another.";
   } catch(e) { fillModels(OR_DEFAULT, null); help.textContent = "Couldn't load the model list, using Auto."; }
 }
-const hasKey = () => !!LS.get(keyName(), "");
+const SS = {
+  get(k){ try { const v = sessionStorage.getItem(k); return v == null ? "" : JSON.parse(v); } catch(e){ return ""; } },
+  set(k, v){ try { sessionStorage.setItem(k, JSON.stringify(v)); } catch(e){} },
+  del(k){ try { sessionStorage.removeItem(k); } catch(e){} }
+};
+const KEYS = {
+  get(k){ return SS.get(k) || LS.get(k, ""); },
+  set(k, v, sessionOnly){ if (sessionOnly) { LS.del(k); SS.set(k, v); } else { SS.del(k); LS.set(k, v); } },
+  del(k){ LS.del(k); SS.del(k); }
+};
+const hasKey = () => !!KEYS.get(keyName());
 function fillModels(list, chosen){
   modelSel.innerHTML = "";
   list.forEach(([v, l]) => { const o = document.createElement("option"); o.value = v; o.textContent = l; modelSel.append(o); });
@@ -319,7 +338,7 @@ function fillModels(list, chosen){
   LS.set("parix-model-" + prov(), modelSel.value);
 }
 async function loadGeminiModels(){
-  const key = LS.get("parix-gkey", ""); const help = document.getElementById("modelHelp");
+  const key = KEYS.get("parix-gkey"); const help = document.getElementById("modelHelp");
   if (!key) { fillModels([], null); help.textContent = "Save a key to load the free models."; return; }
   help.textContent = "Loading models…";
   try {
@@ -352,11 +371,16 @@ provSel.onchange = () => { LS.set("parix-provider", provSel.value); syncProvider
 modelSel.onchange = () => LS.set("parix-model-" + prov(), modelSel.value);
 document.getElementById("saveKey").onclick = () => {
   const v = keyInput.value.trim();
-  if (v && !v.startsWith("•")) LS.set(keyName(), v);
+  if (v && !v.startsWith("•")) KEYS.set(keyName(), v, document.getElementById("keySession").checked);
   if (!hasKey()) { keyMsg.textContent = "Paste a key first."; return; }
   syncProvider();
 };
-document.getElementById("forgetKey").onclick = () => { LS.del(keyName()); syncProvider(); keyMsg.textContent = "Key removed."; };
+document.getElementById("forgetKey").onclick = () => { KEYS.del(keyName()); syncProvider(); keyMsg.textContent = "Key removed."; };
+document.getElementById("keySession").checked = LS.get("parix-key-session", false);
+document.getElementById("keySession").onchange = e => {
+  LS.set("parix-key-session", e.target.checked);
+  ["parix-gkey","parix-orkey","parix-key"].forEach(k => { const v = KEYS.get(k); if (v) KEYS.set(k, v, e.target.checked); });
+};
 
 (async () => {
   try { if (window.claude && window.claude.use) sample = await claude.use("sample"); } catch(e) {}
@@ -379,7 +403,7 @@ async function ai(input, { json = false, signal, maxTokens = 8000 } = {}){
     const r = await sample(input, { signal, modelTier: "default", cache: false });
     return r.text;
   }
-  const key = LS.get(keyName(), "");
+  const key = KEYS.get(keyName());
   if (!key) throw { code: "no_key" };
   const turns = typeof input === "string" ? [{ role: "user", content: input }] : input;
   const model = LS.get("parix-model-" + prov(), "");
@@ -436,14 +460,33 @@ const ERR = {
 const errText = e => ERR[e && e.code] || (e && e.message) || "Something went wrong. Try again in a moment.";
 
 /* ---------------- Local measurements (no AI) ---------------- */
-function toPlain(raw){
-  if (/<\/?(p|h[1-6]|div|li|ul|br)\b/i.test(raw)) {
+const isHtml = raw => /<\/?(p|h[1-6]|div|li|ul|ol|br|section|article|table)\b/i.test(raw);
+function toPlain(raw, { noHeadings = false } = {}){
+  if (isHtml(raw)) {
     const d = new DOMParser().parseFromString(raw, "text/html");
-    d.querySelectorAll("script,style").forEach(n => n.remove());
-    return d.body.innerText || d.body.textContent || "";
+    d.querySelectorAll("script,style,noscript,template").forEach(n => n.remove());
+    const tw = d.createTreeWalker(d.body, NodeFilter.SHOW_TEXT); let tn;
+    while ((tn = tw.nextNode())) if (!tn.parentElement.closest("pre")) tn.nodeValue = tn.nodeValue.replace(/\s+/g, " ");
+    if (noHeadings) d.querySelectorAll("h1,h2,h3,h4,h5,h6").forEach(n => n.remove());
+    d.querySelectorAll("br").forEach(n => n.replaceWith("\n"));
+    d.querySelectorAll("li,dt,dd,tr,figcaption").forEach(n => n.append("\n"));
+    d.querySelectorAll("p,div,h1,h2,h3,h4,h5,h6,ul,ol,dl,table,blockquote,pre,section,article,header,footer,aside,main,figure,hr").forEach(n => { n.before("\n\n"); n.append("\n\n"); });
+    return (d.body.textContent || "").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
   }
-  return raw.replace(/^#{1,6}\s+/gm, "").replace(/[*_`>]/g, "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+  const blockStart = /^\s*(#{1,6}\s|[-*+]\s|\d+[.)]\s|>|\|)/;
+  const lines = [];
+  raw.replace(/\r/g, "").split("\n").forEach(l => {
+    const prev = lines[lines.length - 1];
+    if (l.trim() && !blockStart.test(l) && prev && prev.trim() && !/^\s*#{1,6}\s/.test(prev)) lines[lines.length - 1] = prev + " " + l.trim();
+    else lines.push(l);
+  });
+  let t = lines.join("\n");
+  if (noHeadings) t = t.replace(/^#{1,6}\s+.*$/gm, "");
+  return t.replace(/^#{1,6}\s+/gm, "").replace(/^\s*(?:[-*+]|\d+[.)])\s+/gm, "").replace(/[*_`>]/g, "").replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
 }
+const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const wordRe = (k, flags = "giu") => new RegExp("(?<![\\p{L}\\p{N}])" + escRe(k).replace(/\s+/g, "\\s+") + "(?![\\p{L}\\p{N}])", flags);
+const plural = (n, one, many) => `${n} ${n === 1 ? one : (many || one + "s")}`;
 function headingsOf(raw){
   if (/<h[1-6]\b/i.test(raw)) {
     const d = new DOMParser().parseFromString(raw, "text/html");
@@ -455,7 +498,8 @@ function measure(raw, kw){
   const plain = toPlain(raw);
   const words = plain.split(/\s+/).filter(w => /[\p{L}\p{N}]/u.test(w));
   const wc = words.length;
-  const sentences = plain.split(/(?<=[.!?])\s+/).map(s => s.trim()).filter(s => s.split(/\s+/).length > 2);
+  const prose = toPlain(raw, { noHeadings: true });
+  const sentences = prose.split(/(?<=[.!?])\s+|\n+/).map(s => s.trim()).filter(s => s.split(/\s+/).length > 2);
   const sLens = sentences.map(s => s.split(/\s+/).length);
   const avgS = sLens.length ? sLens.reduce((a, b) => a + b, 0) / sLens.length : 0;
   const longS = sLens.filter(n => n > 25).length;
@@ -466,15 +510,13 @@ function measure(raw, kw){
   const links = (raw.match(/<a\s[^>]*href=|\]\([^)\s]+\)/gi) || []).length;
   const out = { wc, readMin: Math.max(1, Math.round(wc / 230)), avgS, longS, sCount: sLens.length, paraCount: paras.length, longP, heads, qHeads, links };
   if (kw) {
-    const k = kw.toLowerCase().trim();
-    const low = plain.toLowerCase();
-    let count = 0, i = 0;
-    while ((i = low.indexOf(k, i)) !== -1) { count++; i += k.length; }
+    const k = kw.trim();
+    const count = (plain.match(wordRe(k)) || []).length;
     out.kw = {
       count,
       density: wc ? (count * k.split(/\s+/).length / wc * 100) : 0,
-      inFirst100: words.slice(0, 100).join(" ").toLowerCase().includes(k),
-      inHeading: heads.some(h => h.text.toLowerCase().includes(k))
+      inFirst100: wordRe(k, "iu").test(words.slice(0, 100).join(" ")),
+      inHeading: heads.some(h => wordRe(k, "iu").test(h.text))
     };
   }
   return out;
@@ -483,16 +525,16 @@ function quickChecks(m){
   const c = [];
   const st = (ok, warn) => ok ? "pass" : (warn ? "warn" : "fail");
   c.push(["Length", st(m.wc >= 600, m.wc >= 300), `${m.wc} words, about ${m.readMin} min read. Service pages and articles usually need 600+ words to cover a topic well.`]);
-  c.push(["Headings", st(m.heads.length >= 4, m.heads.length >= 2), m.heads.length ? `${m.heads.length} headings found.` : "No headings found. Mark them with ## or paste HTML."]);
-  c.push(["Question headings", st(m.qHeads >= 3, m.qHeads >= 1), `${m.qHeads} headings are written as questions. AI answers match question-style headings well.`]);
-  c.push(["Sentence length", st(m.avgS <= 20, m.avgS <= 25), `Average ${m.avgS.toFixed(1)} words per sentence; ${m.longS} sentences are over 25 words.`]);
-  c.push(["Paragraph length", st(m.longP === 0, m.longP <= 2), m.longP ? `${m.longP} paragraphs are over 120 words. Split them.` : "No very long paragraphs."]);
-  c.push(["Links", st(m.links >= 3, m.links >= 1), `${m.links} links found. Link to related service pages, case studies and articles.`]);
+  c.push(["Headings", st(m.heads.length >= 4, m.heads.length >= 2), m.heads.length ? `${plural(m.heads.length, "heading")} found.` : "No headings found. Mark them with ## or paste HTML."]);
+  c.push(["Question headings", st(m.qHeads >= 3, m.qHeads >= 1), `${m.qHeads === 1 ? "1 heading is" : m.qHeads + " headings are"} written as questions. AI answers match question-style headings well.`]);
+  c.push(["Sentence length", st(m.avgS <= 20, m.avgS <= 25), `Average ${m.avgS.toFixed(1)} words per sentence; ${m.longS === 1 ? "1 sentence is" : m.longS + " sentences are"} over 25 words.`]);
+  c.push(["Paragraph length", st(m.longP === 0, m.longP <= 2), m.longP ? `${m.longP === 1 ? "1 paragraph is" : m.longP + " paragraphs are"} over 120 words. Split ${m.longP === 1 ? "it" : "them"}.` : "No very long paragraphs."]);
+  c.push(["Links", st(m.links >= 3, m.links >= 1), `${plural(m.links, "link")} found. Link to related service pages, case studies and articles.`]);
   if (m.kw) {
     c.push(["Keyword in first 100 words", st(m.kw.inFirst100), m.kw.inFirst100 ? "Yes." : "Not found. Mention the main topic early."]);
     c.push(["Keyword in a heading", st(m.kw.inHeading), m.kw.inHeading ? "Yes." : "Not found in any heading."]);
     const d = m.kw.density;
-    c.push(["Keyword use", st(d >= 0.3 && d <= 2.5, d > 0), `Used ${m.kw.count} times (${d.toFixed(2)}%). ${d > 2.5 ? "This may read as keyword stuffing." : d < 0.3 ? "Use it, and close variations, a little more naturally." : "Natural level."}`]);
+    c.push(["Keyword use", st(d >= 0.3 && d <= 2.5, d > 0), `Used ${m.kw.count === 1 ? "once" : m.kw.count + " times"} (${d.toFixed(2)}%). ${d > 2.5 ? "This may read as keyword stuffing." : d < 0.3 ? "Use it, and close variations, a little more naturally." : "Natural level."}`]);
   }
   return c;
 }
@@ -569,7 +611,7 @@ CONTENT:
 """
 ${c.raw.slice(0, 80000)}
 """`;
-  const data = await ai(prompt, { json: true, signal });
+  const data = normalizeReport(await ai(prompt, { json: true, signal }));
   return { m, data };
 }
 
@@ -717,12 +759,12 @@ ${article}
 $("wStop").addEventListener("click", () => wCtl && wCtl.abort());
 
 /* Markdown -> safe HTML (for preview and WordPress copy) */
-function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
 function inline(s){
   s = esc(s);
   s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>");
   s = s.replace(/`([^`]+)`/g, "<code>$1</code>");
-  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|\/[^)\s]*|[a-z0-9.-]+\.[a-z]{2,}[^)\s]*)\)/gi, (m, t, u) => `<a href="${/^https?:|^\//.test(u) ? u : "https://" + u}">${t}</a>`);
+  s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|\/[^)\s]*|[a-z0-9.-]+\.[a-z]{2,}[^)\s]*)\)/gi, (m, t, u) => `<a href="${/^https?:|^\//.test(u) ? u : "https://" + u}" rel="noopener noreferrer" target="_blank">${t}</a>`);
   s = s.replace(/\[(ADD|LINK):([^\]]*)\]/g, '<mark class="ph">[$1:$2]</mark>');
   return s;
 }
@@ -749,7 +791,7 @@ function mdToHtml(md){
   return out.join("\n");
 }
 function faqsFromMd(md){
-  const part = md.split(/^##\s+Frequently asked questions.*$/mi)[1]; if (!part) return [];
+  const part = md.split(/^##\s+(?:frequently\s+asked\s+questions|faqs?|common\s+questions|questions\s+and\s+answers)\b.*$/mi)[1]; if (!part) return [];
   const sec = part.split(/^##\s+/m)[0]; const res = [];
   sec.split(/^###\s+/m).slice(1).forEach(b => { const [q, ...rest] = b.split("\n"); const a = rest.join(" ").replace(/\s+/g, " ").trim(); if (q.trim() && a) res.push({ q: q.trim(), a: toPlain(a).trim() }); });
   return res;
@@ -822,9 +864,33 @@ function renderWriter({ w, brief, article, audit, first, ctx }){
   p1.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
 }
 
+/* ---------------- Make AI answers safe to render ---------------- */
+function arr(v){
+  if (Array.isArray(v)) return v.filter(x => x != null && x !== "");
+  if (typeof v === "string") return v.split(/\n|,|;/).map(x => x.replace(/^\s*[-*\d.)]+\s*/, "").trim()).filter(Boolean);
+  if (v && typeof v === "object") return [v];
+  return [];
+}
+const str = v => v == null ? "" : typeof v === "string" ? v : typeof v === "object" ? (v.text || v.name || JSON.stringify(v)) : String(v);
+function normalizeReport(d){
+  d = (d && typeof d === "object" && !Array.isArray(d)) ? d : {};
+  d.scores = (d.scores && typeof d.scores === "object") ? d.scores : {};
+  const k = (d.keywords && typeof d.keywords === "object") ? d.keywords : {};
+  d.keywords = { ...k, primary: str(k.primary), secondary: arr(k.secondary).map(str), missing_terms: arr(k.missing_terms).map(str) };
+  d.fixes = arr(d.fixes).map(f => typeof f === "object" ? { ...f, priority: str(f.priority).toLowerCase() || "medium", problem: str(f.problem), fix: str(f.fix) } : { priority: "medium", problem: str(f), fix: "" });
+  d.checks = arr(d.checks).filter(c => typeof c === "object");
+  d.sections = arr(d.sections).filter(x => typeof x === "object");
+  d.faqs = arr(d.faqs).filter(x => typeof x === "object");
+  d.missing_facts = arr(d.missing_facts).map(str);
+  d.internal_links = arr(d.internal_links).map(l => typeof l === "object" ? l : { anchor: str(l), target: "" });
+  ["verdict","meta_title","meta_description","slug"].forEach(x => { if (d[x] != null) d[x] = str(d[x]); });
+  return d;
+}
+
 /* ---------------- Render report ---------------- */
 function num(v){ return Number.isFinite(+v) ? Math.round(+v) : "–"; }
 function renderResult(){
+  current.data = normalizeReport(current.data);
   const { data: d, m } = current;
   const r = document.getElementById("result"); r.innerHTML = ""; r.classList.remove("hidden");
 
@@ -918,14 +984,15 @@ function renderResult(){
   p8.append(el("p", "hint", "The specialist rewrites your content with every fix applied. Facts it doesn't have are marked [ADD: …] for you to fill in."));
   const ra = el("div", "actions");
   const rb = el("button", "btn", "Rewrite with all fixes");
-  const rmsg = el("span", "msg");
-  ra.append(rb, rmsg); p8.append(ra);
+  const rmsg = el("span", "msg"); const rstop = el("button", "btn ghost hidden", "Stop"); let rCtl = null;
+  rstop.onclick = () => rCtl && rCtl.abort();
+  ra.append(rb, rstop, rmsg); p8.append(ra);
   const out = el("div", "draft hidden"); out.style.marginTop = "14px";
   const oa = el("div", "actions hidden"); oa.style.marginTop = "10px";
   oa.append(copyBtn(() => out.textContent, "Copy improved version"));
   p8.append(out, oa);
   rb.onclick = async () => {
-    rb.disabled = true; rmsg.className = "msg"; rmsg.textContent = "Rewriting… this can take one to two minutes.";
+    rb.disabled = true; rCtl = new AbortController(); rstop.classList.remove("hidden"); rmsg.className = "msg"; rmsg.textContent = "Rewriting… this can take one to two minutes.";
     const c = current.ctx;
     const prompt = `${SPECIALIST}
 
@@ -947,11 +1014,11 @@ ORIGINAL CONTENT:
 ${c.raw.slice(0, 80000)}
 """`;
     try {
-      const text = await ai(prompt, { maxTokens: 12000 });
+      const text = await ai(prompt, { maxTokens: 12000, signal: rCtl.signal });
       out.textContent = text.trim(); out.classList.remove("hidden"); oa.classList.remove("hidden");
       rmsg.textContent = "Done. Fill in every [ADD: …] before publishing, then check the new version again.";
-    } catch(e) { rmsg.className = "msg err"; rmsg.textContent = errText(e); }
-    finally { rb.disabled = false; }
+    } catch(e) { rmsg.className = e && e.code === "cancelled" ? "msg" : "msg err"; rmsg.textContent = e && e.code === "cancelled" ? "Stopped." : errText(e); }
+    finally { rb.disabled = false; rstop.classList.add("hidden"); }
   };
   r.append(p8);
 
@@ -966,8 +1033,9 @@ ${c.raw.slice(0, 80000)}
   const log = el("div", "chatlog");
   const qInput = el("textarea"); qInput.style.minHeight = "80px"; qInput.placeholder = "Type your question…";
   const sa = el("div", "actions"); sa.style.marginTop = "10px";
-  const sb = el("button", "btn", "Ask"); const smsg = el("span", "msg");
-  sa.append(sb, smsg);
+  const sb = el("button", "btn", "Ask"); const smsg = el("span", "msg"); const sstop = el("button", "btn ghost hidden", "Stop"); let sCtl = null;
+  sstop.onclick = () => sCtl && sCtl.abort();
+  sa.append(sb, sstop, smsg);
   p9.append(chips, log, qInput, sa);
   r.append(p9);
   const ctxIntro = () => `${SPECIALIST}
@@ -983,14 +1051,14 @@ ${current.ctx.raw.slice(0, 60000)}
     const q = qInput.value.trim(); if (!q) return;
     qInput.value = ""; log.append(el("div", "bubble me", q));
     current.chat.push({ role: "user", content: q });
-    sb.disabled = true; smsg.className = "msg"; smsg.textContent = "Thinking…";
+    sb.disabled = true; sCtl = new AbortController(); sstop.classList.remove("hidden"); smsg.className = "msg"; smsg.textContent = "Thinking…";
     try {
       const turns = [{ role: "user", content: ctxIntro() }, { role: "assistant", content: "Understood. I have the audit and the content. What would you like to know?" }, ...current.chat];
-      const a = await ai(turns, { maxTokens: 3000 });
+      const a = await ai(turns, { maxTokens: 3000, signal: sCtl.signal });
       current.chat.push({ role: "assistant", content: a });
       log.append(el("div", "bubble ai", a.trim())); smsg.textContent = "";
-    } catch(e) { current.chat.pop(); smsg.className = "msg err"; smsg.textContent = errText(e); }
-    finally { sb.disabled = false; }
+    } catch(e) { current.chat.pop(); smsg.className = e && e.code === "cancelled" ? "msg" : "msg err"; smsg.textContent = e && e.code === "cancelled" ? "Stopped." : errText(e); }
+    finally { sb.disabled = false; sstop.classList.add("hidden"); }
   }
   sb.onclick = send;
 
@@ -1018,6 +1086,8 @@ function reportText(){
 
 /* ---------------- Tabs ---------------- */
 const tabs = [["tab-write","view-write"],["tab-seo","view-seo"],["tab-check","view-check"]];
+(() => { const nav = document.querySelector("nav.tabs"); const upd = () => nav.classList.toggle("end", nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - 4); nav.addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd); upd();
+  tabs.forEach(([t]) => document.getElementById(t).addEventListener("click", e => e.currentTarget.scrollIntoView({ block: "nearest", inline: "nearest" }))); })();
 tabs.forEach(([t, v]) => document.getElementById(t).addEventListener("click", () => {
   tabs.forEach(([t2, v2]) => {
     document.getElementById(t2).setAttribute("aria-selected", t2 === t ? "true" : "false");

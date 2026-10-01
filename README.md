@@ -19,7 +19,7 @@ Each person uses their own key. Open the **SEO specialist** tab, pick a provider
 - **OpenRouter (default):** [openrouter.ai](https://openrouter.ai) → sign in → **Keys** → **Create key**. Pick a model marked **FREE**.
 - **Google Gemini:** [aistudio.google.com](https://aistudio.google.com) → **Get API key**.
 
-The key is stored only in your own browser. It is never sent to this site or saved in this repo.
+The key is stored only in your own browser. It is never sent to this site or saved in this repo. On a shared computer, tick **Forget my key when I close this tab**.
 
 ## ⚠️ Warning
 
