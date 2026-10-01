@@ -388,16 +388,29 @@ document.getElementById("keySession").onchange = e => {
 })();
 
 function parseJSON(text){
-  let t = String(text || "").trim();
+  let t = String(text || "").replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
   const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (fence) t = fence[1].trim();
   try { return JSON.parse(t); } catch(e) {}
   const a = t.indexOf("{"), b = t.lastIndexOf("}");
-  if (a >= 0 && b > a) { try { return JSON.parse(t.slice(a, b + 1)); } catch(e) {} }
+  if (a >= 0 && b > a) {
+    const body = t.slice(a, b + 1);
+    try { return JSON.parse(body); } catch(e) {}
+    try { return JSON.parse(body.replace(/,\s*([}\]])/g, "$1").replace(/[\u201C\u201D]/g, '"')); } catch(e) {}
+  }
   throw { code: "invalid_json" };
 }
 
-async function ai(input, { json = false, signal, maxTokens = 8000 } = {}){
+async function ai(input, opts = {}){
+  try { return await aiOnce(input, opts); }
+  catch(e) {
+    if (!opts.json || !e || e.code !== "invalid_json") throw e;
+    const extra = "\n\nIMPORTANT: Reply with ONE valid JSON object only. No markdown, no code fences, no text before or after it.";
+    const retry = typeof input === "string" ? input + extra : input.map((t, i) => i === input.length - 1 ? { ...t, content: t.content + extra } : t);
+    return await aiOnce(retry, opts);
+  }
+}
+async function aiOnce(input, { json = false, signal, maxTokens = 8000 } = {}){
   if (sample) {
     if (json) return sample.json(input, { signal, modelTier: "default" });
     const r = await sample(input, { signal, modelTier: "default", cache: false });
@@ -418,7 +431,7 @@ async function ai(input, { json = false, signal, maxTokens = 8000 } = {}){
   } else if (prov() === "openrouter") {
     url = "https://openrouter.ai/api/v1/chat/completions";
     opts = { headers: { "content-type": "application/json", "authorization": "Bearer " + key, "X-Title": "SEO & AI Visibility Toolkit" },
-      body: JSON.stringify({ model: model || "openrouter/auto", max_tokens: maxTokens, messages: turns }) };
+      body: JSON.stringify({ model: model || "openrouter/auto", max_tokens: maxTokens, messages: turns, ...(json ? { response_format: { type: "json_object" } } : {}) }) };
   } else {
     url = "https://api.anthropic.com/v1/messages";
     opts = { headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
