@@ -201,11 +201,12 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding
 
     <div class="panel engine hidden" id="engineBox">
       <h2>Connect an AI to run the tool</h2>
-      <p class="hint">You opened this file outside Claude, so it needs an API key. Google Gemini has a free tier: no card needed.</p>
+      <p class="hint">To run the AI tools, paste your own API key. OpenRouter and Google Gemini both offer free models: no card needed.</p>
       <div class="row2">
         <div class="field">
           <label for="provider">AI provider</label>
           <select id="provider">
+            <option value="openrouter">OpenRouter (free and paid models)</option>
             <option value="gemini">Google Gemini (free tier)</option>
             <option value="claude">Anthropic Claude (paid API)</option>
           </select>
@@ -293,8 +294,23 @@ const LS = {
 const engineBox = document.getElementById("engineBox");
 const provSel = document.getElementById("provider"), keyInput = document.getElementById("apikey"), modelSel = document.getElementById("model"), keyMsg = document.getElementById("keyMsg");
 const CLAUDE_MODELS = [["claude-sonnet-5-5","Claude Sonnet 5.5 (recommended)"],["claude-opus-5-5","Claude Opus 5.5 (best, costs more)"],["claude-haiku-4-5-20251001","Claude Haiku 4.5 (cheapest)"]];
-const prov = () => LS.get("parix-provider", "gemini");
-const keyName = () => prov() === "gemini" ? "parix-gkey" : "parix-key";
+const prov = () => LS.get("parix-provider", "openrouter");
+const keyName = () => prov() === "gemini" ? "parix-gkey" : prov() === "openrouter" ? "parix-orkey" : "parix-key";
+const OR_DEFAULT = [["openrouter/auto","Auto (OpenRouter picks a model, paid)"]];
+async function loadOpenRouterModels(){
+  const help = document.getElementById("modelHelp");
+  help.textContent = "Loading models…";
+  try {
+    const r = await fetch("https://openrouter.ai/api/v1/models");
+    const d = await r.json();
+    const all = (d.data || []).filter(m => !/(image|audio|embed|tts)/i.test(m.id));
+    const free = all.filter(m => /:free$/.test(m.id)).sort((a, b) => (b.created || 0) - (a.created || 0));
+    const paid = all.filter(m => !/:free$/.test(m.id)).sort((a, b) => (b.created || 0) - (a.created || 0)).slice(0, 40);
+    const list = free.map(m => [m.id, "FREE — " + (m.name || m.id)]).concat(OR_DEFAULT, paid.map(m => [m.id, m.name || m.id]));
+    fillModels(list, LS.get("parix-model-openrouter", list[0] && list[0][0]));
+    help.textContent = "Models marked FREE cost nothing (they have daily limits). If one is busy, pick another.";
+  } catch(e) { fillModels(OR_DEFAULT, null); help.textContent = "Couldn't load the model list, using Auto."; }
+}
 const hasKey = () => !!LS.get(keyName(), "");
 function fillModels(list, chosen){
   modelSel.innerHTML = "";
@@ -323,13 +339,13 @@ async function loadGeminiModels(){
   } catch(e) { fillModels([], null); help.textContent = "Couldn't load models: " + e.message; }
 }
 function syncProvider(){
-  const g = prov() === "gemini";
+  const g = prov() === "gemini", o = prov() === "openrouter";
   provSel.value = prov();
-  document.getElementById("keyLabel").textContent = g ? "Gemini API key" : "Anthropic API key";
-  document.getElementById("keyHelp").textContent = g ? "Free key: aistudio.google.com → Get API key → Create API key." : "console.anthropic.com → API Keys. Billed per use.";
+  document.getElementById("keyLabel").textContent = o ? "OpenRouter API key" : g ? "Gemini API key" : "Anthropic API key";
+  document.getElementById("keyHelp").textContent = o ? "Free key: openrouter.ai → sign in → Keys → Create key." : g ? "Free key: aistudio.google.com → Get API key → Create API key." : "console.anthropic.com → API Keys. Billed per use.";
   keyInput.value = hasKey() ? "••••••••••••" : "";
   keyMsg.textContent = hasKey() ? "Key saved." : "";
-  if (g) loadGeminiModels(); else { fillModels(CLAUDE_MODELS, LS.get("parix-model-claude", "claude-sonnet-5-5")); document.getElementById("modelHelp").textContent = ""; }
+  if (o) loadOpenRouterModels(); else if (g) loadGeminiModels(); else { fillModels(CLAUDE_MODELS, LS.get("parix-model-claude", "claude-sonnet-5-5")); document.getElementById("modelHelp").textContent = ""; }
   const box2 = document.getElementById("engineBox2"); if (box2 && !sample) box2.classList.toggle("hidden", hasKey());
 }
 provSel.onchange = () => { LS.set("parix-provider", provSel.value); syncProvider(); };
@@ -375,6 +391,10 @@ async function ai(input, { json = false, signal, maxTokens = 8000 } = {}){
     if (json) gen.responseMimeType = "application/json";
     opts = { headers: { "content-type": "application/json", "x-goog-api-key": key },
       body: JSON.stringify({ contents: turns.map(t => ({ role: t.role === "assistant" ? "model" : "user", parts: [{ text: t.content }] })), generationConfig: gen }) };
+  } else if (prov() === "openrouter") {
+    url = "https://openrouter.ai/api/v1/chat/completions";
+    opts = { headers: { "content-type": "application/json", "authorization": "Bearer " + key, "X-Title": "SEO & AI Visibility Toolkit" },
+      body: JSON.stringify({ model: model || "openrouter/auto", max_tokens: maxTokens, messages: turns }) };
   } else {
     url = "https://api.anthropic.com/v1/messages";
     opts = { headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
@@ -393,6 +413,10 @@ async function ai(input, { json = false, signal, maxTokens = 8000 } = {}){
     const c = (data.candidates || [])[0];
     text = ((c && c.content && c.content.parts) || []).filter(p => !p.thought).map(p => p.text || "").join("");
     if (!text) throw { code: "api", message: "The model returned no text" + (c && c.finishReason ? " (" + c.finishReason + ")" : "") + ". Try again or pick another model." };
+  } else if (prov() === "openrouter") {
+    const ch = (data.choices || [])[0];
+    text = (ch && ch.message && ch.message.content) || "";
+    if (!text) throw { code: "api", message: "The model returned no text. Try again or pick another model." };
   } else {
     text = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("\n");
   }
@@ -407,7 +431,7 @@ const ERR = {
   input_too_large: "The content is too long. Paste the main text only.",
   no_key: "Add your API key in the SEO specialist tab first.",
   bad_key: "The API key was rejected. Check it and save it again.",
-  network: "Couldn't reach Anthropic. Check your internet connection.",
+  network: "Couldn't reach the AI service. Check your internet connection.",
 };
 const errText = e => ERR[e && e.code] || (e && e.message) || "Something went wrong. Try again in a moment.";
 

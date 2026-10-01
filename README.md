@@ -6,17 +6,20 @@ A single-file, self-contained HTML tool for SEO and AI visibility work. It inclu
 - **SEO specialist checker** – reviews content against SEO and AI-visibility best practices
 - **Setup checklist** – step-by-step checklist for getting a site found by search engines and AI assistants
 
-## How to run
+## Use it online
 
-1. Download `index.html` from this repo.
-2. Double-click it to open it in **Chrome** or **Edge**. No install or server needed.
+**Live link:** https://hafiz-panhwer.github.io/seo-toolkit/
 
-## Free AI (Gemini)
+Or download `index.html` and double-click it to open it in **Chrome** or **Edge**.
 
-1. Go to [aistudio.google.com](https://aistudio.google.com) → **Get API key** and create a free key.
-2. Open the toolkit, go to the **SEO specialist** tab, and paste the key there.
+## Free AI (bring your own key)
 
-The key is stored only in your browser. It is never saved in this repo.
+Each person uses their own key. Open the **SEO specialist** tab, pick a provider, paste your key and click **Save key**.
+
+- **OpenRouter (default):** [openrouter.ai](https://openrouter.ai) → sign in → **Keys** → **Create key**. Pick a model marked **FREE**.
+- **Google Gemini:** [aistudio.google.com](https://aistudio.google.com) → **Get API key**.
+
+The key is stored only in your own browser. It is never sent to this site or saved in this repo.
 
 ## ⚠️ Warning
 
