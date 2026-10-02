@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>SEO & AI Visibility Toolkit</title>
+<meta name="author" content="Hafiz Panhwer">
 <meta name="description" content="Free SEO and AI visibility toolkit: write SEO-ready blog posts, audit any page like an SEO specialist, and follow a setup checklist for Google, ChatGPT and Perplexity. Bring your own free API key.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230B6E78'/%3E%3Ccircle cx='28' cy='28' r='13' fill='none' stroke='%23fff' stroke-width='6'/%3E%3Cpath d='M38 38l12 12' stroke='%23fff' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,7 +32,7 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
 h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",system-ui,sans-serif;line-height:1.15;margin:0}
-.wrap{max-width:900px;margin:0 auto;padding:28px 20px 64px}
+.wrap{max-width:1200px;margin:0 auto;padding:28px 20px 40px}
 header.top{display:grid;gap:10px;margin-bottom:18px}
 header.top h1{font-size:clamp(1.8rem,4.5vw,2.5rem);font-weight:700;letter-spacing:-.01em}
 header.top p{margin:0;color:var(--muted);max-width:64ch}
@@ -45,7 +46,8 @@ nav.tabs button{appearance:none;border:0;background:none;color:var(--muted);font
 nav.tabs button[aria-selected="true"]{color:var(--ink);border-color:var(--accent)}
 button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
-.stack{display:grid;gap:18px}
+.stack{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+.stack > *,.panel{min-width:0}
 .field{display:grid;gap:6px;margin-bottom:14px}
 .field label{font-weight:600;font-size:.95rem}
 .hint{color:var(--muted);font-size:.85rem}
@@ -59,6 +61,8 @@ textarea{min-height:240px;resize:vertical}
 .btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);padding:6px 12px;font-size:.85rem}
 .btn.line{background:transparent;color:var(--ink);border:1px solid var(--line)}
 .actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+label.actions{flex-wrap:nowrap;align-items:flex-start}
+label.actions input{flex:none;margin-top:3px}
 .msg{color:var(--muted);font-size:.95rem}
 .msg.err{color:var(--bad)}
 .note{background:var(--soft);border-radius:10px;padding:10px 12px;font-size:.92rem;margin:0 0 12px}
@@ -135,6 +139,14 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding
 .preview code{background:var(--surface);padding:1px 5px;border-radius:4px}
 .ph{background:var(--mark);color:#1d1d1d;padding:0 4px;border-radius:4px}
 .titles li{margin-bottom:8px}
+.preview pre{margin:12px 0;white-space:pre-wrap;word-break:break-word}
+.preview pre code{background:none;padding:0}
+.by{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.92rem;color:var(--muted)}
+.by a,footer.site a{color:var(--accent);font-weight:600;text-decoration:none}
+.by a:hover,footer.site a:hover{text-decoration:underline}
+.li-ico{display:inline-flex;align-items:center;gap:6px}
+.li-ico svg{width:16px;height:16px;flex:none}
+footer.site{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:.9rem}
 @media (prefers-reduced-motion:reduce){.bar i{transition:none}}
 </style>
 </head>
@@ -143,6 +155,7 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding
   <header class="top">
     <h1>SEO &amp; AI visibility toolkit</h1>
     <p>Write blog posts built for Google, AI Overviews, ChatGPT, Perplexity and local search, then let the SEO specialist check and improve them before you publish.</p>
+    <p class="by">Created by <a class="li-ico" href="https://www.linkedin.com/in/hafizpanhwer" target="_blank" rel="noopener author"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>Hafiz Panhwer</a></p>
   </header>
 
   <nav class="tabs" role="tablist">
@@ -291,6 +304,11 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding
     <p class="hint" id="saveStatus">Progress is saved in this browser.</p>
     <div id="groups"></div>
   </section>
+
+  <footer class="site">
+    <span>&copy; 2026 Hafiz Panhwer. SEO &amp; AI visibility toolkit.</span>
+    <a class="li-ico" href="https://www.linkedin.com/in/hafizpanhwer" target="_blank" rel="noopener author"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>Connect with Hafiz Panhwer on LinkedIn</a>
+  </footer>
 </div>
 
 <script>
@@ -710,6 +728,7 @@ function writeRules(w){
 - FACTS: use only facts from the author's notes or widely known general knowledge. NEVER invent statistics, percentages, studies, client names, prices or results. Where a number or source would strengthen a point, write a placeholder: [ADD: statistic + source] or [ADD: your real example].
 - Internal links: ${w.links ? "link naturally to these pages using descriptive anchor text, as Markdown links:\n" + w.links : "where an internal link belongs, write [LINK: anchor text → page type]."}
 - ${w.author ? `Byline line right under the H1: "By ${w.author}".` : "Add a byline placeholder under the H1: [ADD: author name and role]."}
+- Do NOT add schema markup, JSON-LD, HTML or code blocks. The tool creates the FAQ schema separately.
 - Output ONLY the Markdown article, no commentary.`;
 }
 
@@ -757,7 +776,7 @@ AUTHOR'S REAL FACTS AND EXPERIENCE:
 ${w.facts || "(none given — use [ADD: ...] placeholders wherever first-hand proof is needed)"}
 
 ${writeRules(w)}`;
-    let article = (await ai(writePrompt, { signal, maxTokens: 12000 })).trim();
+    let article = cleanArticle(await ai(writePrompt, { signal, maxTokens: 12000 }));
     stepState("write", "ok");
 
     let audit = null, first = null;
@@ -772,7 +791,7 @@ ${writeRules(w)}`;
 
       // 4. Fix
       stepState("fix", "active");
-      article = (await ai(`${SPECIALIST}
+      article = cleanArticle(await ai(`${SPECIALIST}
 
 Improve this blog post by applying every fix below. Keep everything that already works. Keep all true facts and all [ADD: ...] placeholders unless the fix removes the need.
 FIXES: ${JSON.stringify(audit.data.fixes)}
@@ -786,7 +805,7 @@ ${writeRules(w)}
 ARTICLE:
 """
 ${article}
-"""`, { signal, maxTokens: 12000 })).trim();
+"""`, { signal, maxTokens: 12000 })) || article;
       stepState("fix", "ok");
 
       // 5. Final check
@@ -812,6 +831,17 @@ ${article}
 });
 $("wStop").addEventListener("click", () => wCtl && wCtl.abort());
 
+/* Strip a wrapping ```markdown fence and any schema / JSON-LD the model added on its own */
+function cleanArticle(md){
+  let t = String(md || "").replace(/\r/g, "").trim();
+  const wrap = t.match(/^```(?:markdown|md)?\s*\n([\s\S]*?)\n```\s*$/i);
+  if (wrap) t = wrap[1].trim();
+  t = t.replace(/<script[^>]*ld\+json[^>]*>[\s\S]*?<\/script>/gi, "");
+  t = t.replace(/```[a-z]*\s*\n[\s\S]*?```/gi, b => /schema\.org|"@context"|"@type"/.test(b) ? "" : b);
+  t = t.replace(/^#{2,6}\s*(?:faq\s+)?schema(?:\s+markup)?[^\n]*\n+(?=#{1,2}\s|$)/gim, "");
+  return t.replace(/\n{3,}/g, "\n\n").trim();
+}
+
 /* Markdown -> safe HTML (for preview and WordPress copy) */
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
 function inline(s){
@@ -828,6 +858,7 @@ function mdToHtml(md){
     let l = L[i];
     if (!l.trim()) { i++; continue; }
     let m;
+    if (/^\s*```/.test(l)) { const c = []; i++; while (i < L.length && !/^\s*```/.test(L[i])) { c.push(L[i]); i++; } i++; out.push(`<pre><code>${esc(c.join("\n"))}</code></pre>`); continue; }
     if ((m = l.match(/^(#{1,6})\s+(.*)$/))) { out.push(`<h${m[1].length}>${inline(m[2])}</h${m[1].length}>`); i++; continue; }
     if (/^\s*\|.*\|\s*$/.test(l) && i + 1 < L.length && /^\s*\|?\s*:?-{2,}/.test(L[i+1])) {
       const row = r => r.trim().replace(/^\||\|$/g, "").split("|").map(c => c.trim());
@@ -839,7 +870,7 @@ function mdToHtml(md){
     if (/^\s*[-*]\s+/.test(l)) { const it = []; while (i < L.length && /^\s*[-*]\s+/.test(L[i])) { it.push(L[i].replace(/^\s*[-*]\s+/, "")); i++; } out.push("<ul>" + it.map(x => `<li>${inline(x)}</li>`).join("") + "</ul>"); continue; }
     if (/^\s*\d+[.)]\s+/.test(l)) { const it = []; while (i < L.length && /^\s*\d+[.)]\s+/.test(L[i])) { it.push(L[i].replace(/^\s*\d+[.)]\s+/, "")); i++; } out.push("<ol>" + it.map(x => `<li>${inline(x)}</li>`).join("") + "</ol>"); continue; }
     if (/^>\s?/.test(l)) { const q = []; while (i < L.length && /^>\s?/.test(L[i])) { q.push(L[i].replace(/^>\s?/, "")); i++; } out.push(`<blockquote>${inline(q.join(" "))}</blockquote>`); continue; }
-    const p = []; while (i < L.length && L[i].trim() && !/^(#{1,6}\s|\s*[-*]\s|\s*\d+[.)]\s|>|\s*\|)/.test(L[i])) { p.push(L[i]); i++; }
+    const p = []; while (i < L.length && L[i].trim() && !/^(#{1,6}\s|\s*[-*]\s|\s*\d+[.)]\s|>|\s*\||\s*```)/.test(L[i])) { p.push(L[i]); i++; }
     if (p.length) out.push(`<p>${inline(p.join(" "))}</p>`); else { out.push(`<p>${inline(l)}</p>`); i++; }
   }
   return out.join("\n");
@@ -1061,6 +1092,7 @@ Rules:
 - Keep every true fact from the original. Do NOT invent numbers, clients, prices, results, team names or dates. Where one is needed, write a placeholder like [ADD: typical project timeline].
 - Where an internal link belongs, write [LINK: anchor text → target page type].
 - End with an FAQ section (## Frequently asked questions, ### for each question) and a short call to action.
+- Do NOT add schema markup, JSON-LD, HTML or code blocks.
 - Output only the Markdown article. No commentary before or after.
 
 ORIGINAL CONTENT:
@@ -1069,7 +1101,7 @@ ${c.raw.slice(0, 80000)}
 """`;
     try {
       const text = await ai(prompt, { maxTokens: 12000, signal: rCtl.signal });
-      out.textContent = text.trim(); out.classList.remove("hidden"); oa.classList.remove("hidden");
+      out.textContent = cleanArticle(text); out.classList.remove("hidden"); oa.classList.remove("hidden");
       rmsg.textContent = "Done. Fill in every [ADD: …] before publishing, then check the new version again.";
     } catch(e) { rmsg.className = e && e.code === "cancelled" ? "msg" : "msg err"; rmsg.textContent = e && e.code === "cancelled" ? "Stopped." : errText(e); }
     finally { rb.disabled = false; rstop.classList.add("hidden"); }
