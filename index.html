@@ -487,7 +487,11 @@ async function aiOnce(input, { json = false, signal, maxTokens = 8000 } = {}){
 
 const ERR = {
   not_granted: "Allow Claude access when asked, then try again.",
-  rate_limited: "Limit reached. On the free Gemini tier wait a minute, or if the daily limit is used up, switch to a Flash-Lite model or try again tomorrow.",
+  get rate_limited(){ return prov() === "gemini"
+    ? "Limit reached. On the free Gemini tier wait a minute, or if the daily limit is used up, switch to a Flash-Lite model or try again tomorrow."
+    : prov() === "openrouter"
+    ? "Limit reached. This free model is busy or its daily limit is used up. Wait a minute, or pick another FREE model in the SEO specialist tab."
+    : "Limit reached. Wait a minute and try again."; },
   no_model: "Pick a model in the SEO specialist tab first.",
   invalid_json: "The AI model sent its answer in the wrong format. Click the button again, or pick a different FREE model in the SEO specialist tab.",
   cut_off: "The AI model stopped before finishing its answer (its output limit is too small). Pick a bigger model in the SEO specialist tab.",
@@ -565,7 +569,7 @@ function quickChecks(m){
   const st = (ok, warn) => ok ? "pass" : (warn ? "warn" : "fail");
   c.push(["Length", st(m.wc >= 600, m.wc >= 300), `${m.wc} words, about ${m.readMin} min read. Service pages and articles usually need 600+ words to cover a topic well.`]);
   c.push(["Headings", st(m.heads.length >= 4, m.heads.length >= 2), m.heads.length ? `${plural(m.heads.length, "heading")} found.` : "No headings found. Mark them with ## or paste HTML."]);
-  c.push(["Question headings", st(m.qHeads >= 3, m.qHeads >= 1), `${m.qHeads === 1 ? "1 heading is" : m.qHeads + " headings are"} written as questions. AI answers match question-style headings well.`]);
+  c.push(["Question headings", st(m.qHeads >= 3, m.qHeads >= 1), `${m.qHeads === 1 ? "1 heading is written as a question" : m.qHeads + " headings are written as questions"}. AI answers match question-style headings well.`]);
   c.push(["Sentence length", st(m.avgS <= 20, m.avgS <= 25), `Average ${m.avgS.toFixed(1)} words per sentence; ${m.longS === 1 ? "1 sentence is" : m.longS + " sentences are"} over 25 words.`]);
   c.push(["Paragraph length", st(m.longP === 0, m.longP <= 2), m.longP ? `${m.longP === 1 ? "1 paragraph is" : m.longP + " paragraphs are"} over 120 words. Split ${m.longP === 1 ? "it" : "them"}.` : "No very long paragraphs."]);
   c.push(["Links", st(m.links >= 3, m.links >= 1), `${plural(m.links, "link")} found. Link to related service pages, case studies and articles.`]);
