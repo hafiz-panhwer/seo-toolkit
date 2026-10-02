@@ -35,7 +35,8 @@ h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",system-ui,sans-serif;li
 header.top{display:grid;gap:10px;margin-bottom:18px}
 header.top h1{font-size:clamp(1.8rem,4.5vw,2.5rem);font-weight:700;letter-spacing:-.01em}
 header.top p{margin:0;color:var(--muted);max-width:64ch}
-nav.tabs{display:flex;gap:6px;border-bottom:2px solid var(--line);margin:8px 0 22px;overflow-x:auto;scrollbar-width:thin}
+nav.tabs{display:flex;gap:6px;border-bottom:2px solid var(--line);margin:8px 0 22px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
 @media (max-width:560px){
   nav.tabs{-webkit-mask-image:linear-gradient(90deg,#000 80%,transparent);mask-image:linear-gradient(90deg,#000 80%,transparent);padding-right:28px}
   nav.tabs.end{-webkit-mask-image:none;mask-image:none}
@@ -387,6 +388,24 @@ document.getElementById("keySession").onchange = e => {
   if (!sample) { engineBox.classList.remove("hidden"); syncProvider(); if (!hasKey()) document.getElementById("engineBox2").classList.remove("hidden"); }
 })();
 
+/* Close a JSON object that was cut off in the middle (common with free models). */
+function repairJSON(src){
+  let cut = src;
+  for (let tries = 0; tries < 40 && cut.length > 1; tries++) {
+    const stack = []; let inStr = false, esc = false;
+    for (const ch of cut) {
+      if (inStr) { if (esc) esc = false; else if (ch === "\\") esc = true; else if (ch === '"') inStr = false; continue; }
+      if (ch === '"') inStr = true; else if (ch === "{") stack.push("}"); else if (ch === "[") stack.push("]"); else if (ch === "}" || ch === "]") stack.pop();
+    }
+    let body = cut + (inStr ? '"' : "");
+    body = body.replace(/,\s*$/, "").replace(/,\s*"[^"]*"\s*:?\s*$/, "").replace(/:\s*$/, ': ""');
+    try { const v = JSON.parse(body + stack.reverse().join("")); if (v && typeof v === "object") return v; } catch(e) {}
+    const lastComma = cut.lastIndexOf(",");
+    if (lastComma <= 0) break;
+    cut = cut.slice(0, lastComma);
+  }
+  return null;
+}
 function parseJSON(text){
   let t = String(text || "").replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
   const fence = t.match(/```(?:json)?\s*([\s\S]*?)```/);
@@ -398,6 +417,7 @@ function parseJSON(text){
     try { return JSON.parse(body); } catch(e) {}
     try { return JSON.parse(body.replace(/,\s*([}\]])/g, "$1").replace(/[\u201C\u201D]/g, '"')); } catch(e) {}
   }
+  if (a >= 0) { const fixed = repairJSON(t.slice(a)); if (fixed) return fixed; }
   throw { code: "invalid_json" };
 }
 
@@ -445,26 +465,32 @@ async function aiOnce(input, { json = false, signal, maxTokens = 8000 } = {}){
     const m = data?.error?.message || "";
     throw { code: res.status === 429 ? "rate_limited" : (res.status === 401 || res.status === 403 || /api key/i.test(m)) ? "bad_key" : "api", message: m };
   }
-  let text;
+  let text, cutOff = false;
   if (prov() === "gemini") {
     const c = (data.candidates || [])[0];
+    if (c && c.finishReason === "MAX_TOKENS") cutOff = true;
     text = ((c && c.content && c.content.parts) || []).filter(p => !p.thought).map(p => p.text || "").join("");
     if (!text) throw { code: "api", message: "The model returned no text" + (c && c.finishReason ? " (" + c.finishReason + ")" : "") + ". Try again or pick another model." };
   } else if (prov() === "openrouter") {
     const ch = (data.choices || [])[0];
+    if (data.error && !ch) throw { code: "api", message: data.error.message || "The model returned an error. Pick another model." };
     text = (ch && ch.message && ch.message.content) || "";
-    if (!text) throw { code: "api", message: "The model returned no text. Try again or pick another model." };
+    if (!text) throw { code: "api", message: "The model returned no text (it may be busy). Try again or pick another FREE model." };
+    if (ch.finish_reason === "length") cutOff = true;
   } else {
     text = (data.content || []).filter(b => b.type === "text").map(b => b.text).join("\n");
   }
-  return json ? parseJSON(text) : text;
+  if (!json) return text;
+  try { return parseJSON(text); }
+  catch(e) { throw cutOff ? { code: "cut_off" } : e; }
 }
 
 const ERR = {
   not_granted: "Allow Claude access when asked, then try again.",
   rate_limited: "Limit reached. On the free Gemini tier wait a minute, or if the daily limit is used up, switch to a Flash-Lite model or try again tomorrow.",
   no_model: "Pick a model in the SEO specialist tab first.",
-  invalid_json: "The answer came back in the wrong format. Click the button again.",
+  invalid_json: "The AI model sent its answer in the wrong format. Click the button again, or pick a different FREE model in the SEO specialist tab.",
+  cut_off: "The AI model stopped before finishing its answer (its output limit is too small). Pick a bigger model in the SEO specialist tab.",
   input_too_large: "The content is too long. Paste the main text only.",
   no_key: "Add your API key in the SEO specialist tab first.",
   bad_key: "The API key was rejected. Check it and save it again.",
@@ -697,7 +723,8 @@ $("wRun").addEventListener("click", async () => {
   try {
     // 1. Brief
     stepState("brief", "active");
-    const brief = await ai(`${SPECIALIST}
+    let brief = {};
+    try { brief = await ai(`${SPECIALIST}
 
 Create a content brief for a blog post.
 Topic: ${w.topic}
@@ -707,7 +734,8 @@ Audience: ${w.aud || "small and medium business owners"}
 Language: ${w.lang}
 
 Reply with ONLY JSON:
-{"intent":"what the searcher wants","primary_keyword":"...","secondary_keywords":["5-8"],"entities":["related concepts, tools, terms to cover"],"questions":["8-12 real questions people ask Google and AI assistants about this"],"local_angle":"how to make it locally relevant, or empty","titles":["3 title options under 60 characters, with the keyword"],"outline":[{"h2":"question-style heading","covers":"what this section answers"}]}`, { json: true, signal });
+{"intent":"what the searcher wants","primary_keyword":"...","secondary_keywords":["5-8"],"entities":["related concepts, tools, terms to cover"],"questions":["8-12 real questions people ask Google and AI assistants about this"],"local_angle":"how to make it locally relevant, or empty","titles":["3 title options under 60 characters, with the keyword"],"outline":[{"h2":"question-style heading","covers":"what this section answers"}]}`, { json: true, signal }); }
+    catch(e) { if (e && e.code === "cancelled") throw e; brief = {}; }
     stepState("brief", "ok");
 
     // 2. Write
@@ -730,7 +758,8 @@ ${writeRules(w)}`;
 
     let audit = null, first = null;
     const actx = () => ({ type: "Blog article", kw: brief.primary_keyword || w.kw, aud: [w.aud, w.loc].filter(Boolean).join(", "), url: (brief.titles || [])[0] || w.topic, raw: article });
-    if (w.auto) {
+    let autoErr = null;
+    if (w.auto) try {
       // 3. Audit
       stepState("audit", "active");
       audit = await auditContent(actx(), signal);
@@ -758,11 +787,19 @@ ${article}
 
       // 5. Final check
       stepState("final", "active");
-      audit = await auditContent(actx(), signal);
+      const finalAudit = await auditContent(actx(), signal);
+      audit = finalAudit;
       stepState("final", "ok");
+    } catch(e) {
+      if (e && e.code === "cancelled") throw e;
+      autoErr = e;
+      const failed = document.querySelector("#wSteps li.active"); const failedName = failed ? failed.dataset.s : "audit";
+      document.querySelectorAll("#wSteps li.active").forEach(li => li.classList.remove("active"));
+      if (failedName === "final") { audit = null; first = null; }
     }
     renderWriter({ w, brief, article, audit, first, ctx: actx() });
-    msg.textContent = "Done.";
+    if (autoErr) { msg.className = "msg err"; msg.textContent = "Your article is ready below, but the automatic SEO check could not finish. " + errText(autoErr); }
+    else msg.textContent = "Done.";
   } catch(e) {
     document.querySelectorAll("#wSteps li.active").forEach(li => li.classList.remove("active"));
     if (e && e.code === "cancelled") msg.textContent = "Stopped.";
